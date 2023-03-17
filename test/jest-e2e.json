@@ -12,6 +12,8 @@
   },
   "moduleNameMapper": {
     "@app/typeorm/(.*)": "<rootDir>/../libs/typeorm/src/$1",
-    "@app/typeorm": "<rootDir>/../libs/typeorm/src"
+    "@app/typeorm": "<rootDir>/../libs/typeorm/src",
+    "@app/payment/(.*)": "<rootDir>/../libs/payment/src/$1",
+    "@app/payment": "<rootDir>/../libs/payment/src"
   }
 }

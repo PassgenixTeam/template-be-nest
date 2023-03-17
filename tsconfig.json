@@ -29,6 +29,12 @@
       ],
       "@app/common/*": [
         "libs/common/src/*"
+      ],
+      "@app/payment": [
+        "libs/payment/src"
+      ],
+      "@app/payment/*": [
+        "libs/payment/src/*"
       ]
     }
   }

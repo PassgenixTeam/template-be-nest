@@ -23,6 +23,12 @@ const appConfig = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY || 'abcxyz',
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '30d',
   },
+  payment: {
+    stripe: {
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || '',
+      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
+    },
+  },
 };
 
 export { appConfig };
