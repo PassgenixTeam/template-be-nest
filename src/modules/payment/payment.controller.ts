@@ -21,22 +21,27 @@ import { Request } from 'express';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentService.create(createPaymentDto);
+  @Get('create-checkout-session/:id')
+  async createCheckoutSession(@Param('id') id: string) {
+    return this.paymentService.createCheckoutSession(id);
   }
 
-  @Get()
-  findAll() {
-    return this.paymentService.findAll();
+  @Get('create-payment-intent')
+  createPaymentIntent() {
+    return this.paymentService.createPaymentIntent();
+  }
+
+  @Get('publishable-key')
+  getPublishableKey() {
+    return this.paymentService.getPublishableKey();
   }
 
   @Post('webhook')
-  findOne(
+  webhook(
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') sig: string,
   ) {
-    return this.paymentService.findOne(req.rawBody, sig);
+    return this.paymentService.webhook(req.rawBody, sig);
   }
 
   @Patch(':id')

@@ -11,15 +11,20 @@ export class PaymentService {
     return 'This action adds a new payment';
   }
 
-  async findAll() {
-    const paymentIntent = await this.stripeService.createPaymentIntent(
-      100,
-      'usd',
-    );
-    return { clientSecret: paymentIntent.client_secret };
+  async createCheckoutSession(id: string) {
+    const session = await this.stripeService.createCheckoutSession(id);
+    return session;
   }
 
-  async findOne(payload: any, signature: string) {
+  async createPaymentIntent() {
+    return this.stripeService.createPaymentIntent(2000, 'usd');
+  }
+
+  async getPublishableKey() {
+    return this.stripeService.getPublishableKey();
+  }
+
+  async webhook(payload: any, signature: string) {
     return this.stripeService.webhook(payload, signature);
   }
 

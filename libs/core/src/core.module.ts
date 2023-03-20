@@ -13,10 +13,15 @@ import { LoggerMiddleware } from '@app/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { appConfig } from './config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Global()
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../../', 'public').replace('/dist', ''),
+    }),
     //
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     //
