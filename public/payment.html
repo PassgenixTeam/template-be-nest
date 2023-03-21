@@ -26,18 +26,54 @@
           .then((res) => res.json())
           .then((data) => data.data);
 
-        const elements = stripe.elements({ clientSecret });
-        const paymentElement = elements.create('payment', { clientSecret });
+        const elements = stripe.elements({
+          clientSecret,
+        });
+
+        const paymentElement = elements.create('payment', {
+          layout: 'accordion',
+          defaultCollapsed: true,
+          radios: true,
+
+          billingDetails: {
+            name: { value: 'John Doe' },
+            email: { value: 'john.doe@example.com' },
+            phone: { value: '555-555-5555' },
+            address: {
+              line1: { value: '123 Main St' },
+              city: { value: 'Anytown' },
+              state: { value: 'CA' },
+              postal_code: { value: '12345' },
+              country: { value: 'US' },
+            },
+          },
+        });
         paymentElement.mount('#payment-element');
 
         const form = document.getElementById('payment-form');
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
+
           const { paymentIntent, error } = await stripe.confirmPayment({
             elements,
+
             confirmParams: {
               // Return URL where the customer should be redirected after the PaymentIntent is confirmed.
               return_url: 'https://example.com',
+              payment_method_data: {
+                billing_details: {
+                  name: 'John Doe',
+                  email: 'john.doe@example.com',
+                  phone: '555-555-5555',
+                  address: {
+                    line1: '123 Main St',
+                    city: 'Anytown',
+                    state: 'C123213A',
+                    postal_code: '12345',
+                    country: 'US',
+                  },
+                },
+              },
             },
           });
           if (error) {

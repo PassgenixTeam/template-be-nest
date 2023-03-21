@@ -1,18 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { appConfig } from '@app/core';
+import {
+  AddPaymentMethodDto,
+  CreatePaymentIntentDto,
+  CreatePaymentMethodDto,
+} from './dto';
+import { CreateCustomerPaymentDto } from './dto/create-customer-payment.dto';
 
 @Injectable()
 export class StripeService {
-  private readonly stripeConfig: Stripe = new Stripe(
-    appConfig.payment.stripe.STRIPE_SECRET_KEY,
-    {
+  private readonly stripe: Stripe;
+
+  constructor() {
+    this.stripe = new Stripe(appConfig.payment.stripe.STRIPE_SECRET_KEY, {
       apiVersion: '2022-11-15',
-    },
-  );
+    });
+  }
 
   async createCheckoutSession(id: string) {
-    const session = await this.stripeConfig.checkout.sessions.create({
+    const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
@@ -43,11 +50,13 @@ export class StripeService {
     };
   }
 
-  async createPaymentIntent(amount: number, currency: string) {
+  async createPaymentIntent(input: CreatePaymentIntentDto) {
     try {
-      const paymentIntent = await this.stripeConfig.paymentIntents.create({
+      const { amount, currency, customerId, paymentMethodId } = input;
+      const paymentIntent = await this.stripe.paymentIntents.create({
         receipt_email: 'uptimumdn2000@gmail.com',
-        // customer: 'cus_KYq2Z2Q2Z2Q2Z2',
+        customer: customerId,
+        payment_method: paymentMethodId,
         amount: amount,
         currency: currency,
       });
@@ -60,7 +69,7 @@ export class StripeService {
 
   async webhook(payload: any, sig: string) {
     try {
-      const event = this.stripeConfig.webhooks.constructEvent(
+      const event = this.stripe.webhooks.constructEvent(
         payload,
         sig,
         appConfig.payment.stripe.STRIPE_WEBHOOK_SECRET,
@@ -127,15 +136,56 @@ export class StripeService {
     }
   }
 
-  async createCustomer(email: string) {
+  async createCustomer(input: CreateCustomerPaymentDto) {
     try {
-      const customer = await this.stripeConfig.customers.create({
-        email: email,
+      const { email, name, city, country, state, line1, line2, phone } = input;
+      const customer = await this.stripe.customers.create({
+        email,
+        name,
+        address: {
+          city,
+          country,
+          line1,
+          line2,
+          state,
+        },
+        phone,
       });
 
       return customer;
     } catch (error) {
       throw error;
     }
+  }
+
+  async createPaymentMethod(
+    input: CreatePaymentMethodDto,
+  ): Promise<Stripe.PaymentMethod> {
+    const { cardNumber, expMonth, expYear, cvc, customerId } = input;
+    const paymentMethod = await this.stripe.paymentMethods.create({
+      customer: customerId,
+      type: 'card',
+      card: {
+        number: cardNumber,
+        exp_month: expMonth,
+        exp_year: expYear,
+        cvc: cvc,
+      },
+    });
+
+    return paymentMethod;
+  }
+
+  async addPaymentMethodToCustomer(
+    input: AddPaymentMethodDto,
+  ): Promise<Stripe.Customer> {
+    const { customerId, paymentMethodId } = input;
+    const customer = await this.stripe.customers.update(customerId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+
+    return customer;
   }
 }

@@ -25,7 +25,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     //
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
-    MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
+    // MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
     //
     JwtModule.registerAsync({
       useFactory: () => ({
