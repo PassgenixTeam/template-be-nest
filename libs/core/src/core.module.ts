@@ -15,6 +15,7 @@ import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { appConfig } from './config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Global()
 @Module({
@@ -24,6 +25,7 @@ import { join } from 'path';
     }),
     //
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
+    MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
     //
     JwtModule.registerAsync({
       useFactory: () => ({

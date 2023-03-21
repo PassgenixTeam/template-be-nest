@@ -126,4 +126,16 @@ export class StripeService {
       throw err;
     }
   }
+
+  async createCustomer(email: string) {
+    try {
+      const customer = await this.stripeConfig.customers.create({
+        email: email,
+      });
+
+      return customer;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

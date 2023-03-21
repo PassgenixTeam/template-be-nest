@@ -9,11 +9,11 @@ import { appConfig } from './env.config';
 const typeOrmOption = (): PostgresConnectionOptions => {
   return {
     type: 'postgres',
-    host: appConfig.database.DB_HOST,
-    port: +appConfig.database.DB_PORT,
-    username: appConfig.database.DB_USERNAME,
-    database: appConfig.database.DB_DATABASE_NAME,
-    password: appConfig.database.DB_PASSWORD,
+    host: appConfig.database.MY_SQL.DB_HOST,
+    port: +appConfig.database.MY_SQL.DB_PORT,
+    username: appConfig.database.MY_SQL.DB_USERNAME,
+    database: appConfig.database.MY_SQL.DB_DATABASE_NAME,
+    password: appConfig.database.MY_SQL.DB_PASSWORD,
     extra: { charset: 'utf8mb4_unicode_ci' },
     synchronize: false,
     logging: appConfig.env === 'development' ? true : false,

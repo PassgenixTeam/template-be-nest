@@ -18,14 +18,14 @@
         const { publishableKey } = await fetch('api/payment/publishable-key')
           .then((res) => res.json())
           .then((data) => data.data);
-        console.log(publishableKey);
+
         const stripe = Stripe(publishableKey);
         const { clientSecret } = await fetch(
           'api/payment/create-payment-intent',
         )
           .then((res) => res.json())
           .then((data) => data.data);
-        console.log(clientSecret);
+
         const elements = stripe.elements({ clientSecret });
         const paymentElement = elements.create('payment', { clientSecret });
         paymentElement.mount('#payment-element');

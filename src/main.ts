@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import mongoose from 'mongoose';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -30,6 +31,10 @@ async function bootstrap() {
 
   const PORT = appConfig.server.PORT || 3000;
   const HOST = appConfig.server.HOST || 'localhost';
+
+  if (process.env.NODE_ENV == 'development') {
+    mongoose.set('debug', true);
+  }
 
   await app.listen(PORT);
 
