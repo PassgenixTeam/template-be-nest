@@ -21,7 +21,8 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "yarn typeorm migration:generate src/database/migrations/migration -d src/database/ormconfig.ts",
     "migration:run": "yarn run typeorm migration:run -d src/database/ormconfig.ts",
-    "migration:revert": "yarn run typeorm migration:revert -d src/database/ormconfig.ts"
+    "migration:revert": "yarn run typeorm migration:revert -d src/database/ormconfig.ts",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -72,7 +73,8 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.1.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "husky": "^8.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
