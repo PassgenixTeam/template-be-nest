@@ -17,6 +17,8 @@ import {
   CreatePaymentIntentDto,
   CreatePaymentMethodDto,
 } from './dto';
+import { CapturePaymentIntentDto } from './dto/capture-payment-intent.dto';
+import { ConfirmPaymentIntentDto } from './dto/confirm-payment-intent.dto';
 
 @ApiTags('stripe')
 @Controller('stripe')
@@ -48,9 +50,19 @@ export class StripeController {
     return this.stripeService.createPaymentMethod(paymentMethod);
   }
 
-  @Post()
-  addPaymentMethodToCustomer(@Body() paymentMethod: AddPaymentMethodDto) {
-    return this.stripeService.addPaymentMethodToCustomer(paymentMethod);
+  @Post('default-payment-method-to-customer')
+  defaultPaymentMethodToCustomer(@Body() paymentMethod: AddPaymentMethodDto) {
+    return this.stripeService.defaultPaymentMethodToCustomer(paymentMethod);
+  }
+
+  @Post('confirm-payment-intent')
+  confirmPaymentIntent(@Body() input: ConfirmPaymentIntentDto) {
+    return this.stripeService.confirmPaymentIntent(input);
+  }
+
+  @Post('capture-payment-intent')
+  capturePaymentIntent(@Body() input: CapturePaymentIntentDto) {
+    return this.stripeService.capturePaymentIntent(input);
   }
 
   @Post('webhook')

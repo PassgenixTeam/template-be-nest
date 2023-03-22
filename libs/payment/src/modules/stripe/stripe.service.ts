@@ -7,7 +7,8 @@ import {
   CreatePaymentMethodDto,
 } from './dto';
 import { CreateCustomerPaymentDto } from './dto/create-customer-payment.dto';
-
+import { CapturePaymentIntentDto } from './dto/capture-payment-intent.dto';
+import { ConfirmPaymentIntentDto } from './dto/confirm-payment-intent.dto';
 @Injectable()
 export class StripeService {
   private readonly stripe: Stripe;
@@ -18,31 +19,31 @@ export class StripeService {
     });
   }
 
-  async createCheckoutSession(id: string) {
-    const session = await this.stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: '30 days package',
-              images: ['https://i.imgur.com/EHyR2nP.png'],
-              description: '30 days package',
-            },
-            unit_amount: 2000,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url:
-        'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://example.com/cancel',
-    });
+  // async createCheckoutSession(id: string) {
+  //   const session = await this.stripe.checkout.sessions.create({
+  //     payment_method_types: ['card'],
+  //     line_items: [
+  //       {
+  //         price_data: {
+  //           currency: 'usd',
+  //           product_data: {
+  //             name: '30 days package',
+  //             images: ['https://i.imgur.com/EHyR2nP.png'],
+  //             description: '30 days package',
+  //           },
+  //           unit_amount: 2000,
+  //         },
+  //         quantity: 1,
+  //       },
+  //     ],
+  //     mode: 'payment',
+  //     success_url:
+  //       'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+  //     cancel_url: 'https://example.com/cancel',
+  //   });
 
-    return session.url;
-  }
+  //   return session.url;
+  // }
 
   async getPublishableKey() {
     return {
@@ -53,18 +54,118 @@ export class StripeService {
   async createPaymentIntent(input: CreatePaymentIntentDto) {
     try {
       const { amount, currency, customerId, paymentMethodId } = input;
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         receipt_email: 'uptimumdn2000@gmail.com',
         customer: customerId,
         payment_method: paymentMethodId,
         amount: amount,
         currency: currency,
+        capture_method: 'automatic',
       });
 
-      return { clientSecret: paymentIntent.client_secret };
+      return {
+        clientSecret: paymentIntent.client_secret,
+      };
     } catch (error) {
       throw error;
     }
+  }
+
+  async createCustomer(input: CreateCustomerPaymentDto) {
+    try {
+      const { email, name, city, country, state, line1, line2, phone } = input;
+      const customer = await this.stripe.customers.create({
+        email,
+        name,
+        address: {
+          city,
+          country,
+          line1,
+          line2,
+          state,
+        },
+        phone,
+      });
+
+      return customer;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createPaymentMethod(
+    input: CreatePaymentMethodDto,
+  ): Promise<Stripe.PaymentMethod> {
+    const { token, customerId } = input;
+    const paymentMethod = await this.stripe.paymentMethods.create({
+      type: 'card',
+      card: {
+        token,
+      },
+    });
+
+    if (customerId) {
+      await this.stripe.paymentMethods.attach(paymentMethod.id, {
+        customer: customerId,
+      });
+    }
+
+    return paymentMethod;
+  }
+
+  async defaultPaymentMethodToCustomer(
+    input: AddPaymentMethodDto,
+  ): Promise<Stripe.Customer> {
+    const { customerId, paymentMethodId } = input;
+    const customer = await this.stripe.customers.update(customerId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+
+    return customer;
+  }
+
+  async getPaymentMethods(paymentMethodId: string) {
+    const paymentMethod = await this.stripe.paymentMethods.retrieve(
+      paymentMethodId,
+    );
+
+    return paymentMethod;
+  }
+
+  async capturePaymentIntent(input: CapturePaymentIntentDto) {
+    const { paymentIntentId, amount } = input;
+    const paymentIntent = await this.stripe.paymentIntents.capture(
+      paymentIntentId,
+      {
+        amount_to_capture: amount,
+      },
+    );
+
+    return paymentIntent;
+  }
+
+  async confirmPaymentIntent(input: ConfirmPaymentIntentDto) {
+    const { paymentIntentId } = input;
+    const paymentIntent = await this.stripe.paymentIntents.confirm(
+      paymentIntentId,
+      // {
+      //   payment_method_data: {
+      // more data
+      //   }
+      // }
+    );
+
+    if (paymentIntent.status === 'requires_capture') {
+      const capture = await this.stripe.paymentIntents.capture(
+        paymentIntent.id,
+      );
+      console.log('capture', capture);
+    }
+
+    return paymentIntent;
   }
 
   async webhook(payload: any, sig: string) {
@@ -134,58 +235,5 @@ export class StripeService {
     } catch (err) {
       throw err;
     }
-  }
-
-  async createCustomer(input: CreateCustomerPaymentDto) {
-    try {
-      const { email, name, city, country, state, line1, line2, phone } = input;
-      const customer = await this.stripe.customers.create({
-        email,
-        name,
-        address: {
-          city,
-          country,
-          line1,
-          line2,
-          state,
-        },
-        phone,
-      });
-
-      return customer;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async createPaymentMethod(
-    input: CreatePaymentMethodDto,
-  ): Promise<Stripe.PaymentMethod> {
-    const { cardNumber, expMonth, expYear, cvc, customerId } = input;
-    const paymentMethod = await this.stripe.paymentMethods.create({
-      customer: customerId,
-      type: 'card',
-      card: {
-        number: cardNumber,
-        exp_month: expMonth,
-        exp_year: expYear,
-        cvc: cvc,
-      },
-    });
-
-    return paymentMethod;
-  }
-
-  async addPaymentMethodToCustomer(
-    input: AddPaymentMethodDto,
-  ): Promise<Stripe.Customer> {
-    const { customerId, paymentMethodId } = input;
-    const customer = await this.stripe.customers.update(customerId, {
-      invoice_settings: {
-        default_payment_method: paymentMethodId,
-      },
-    });
-
-    return customer;
   }
 }
