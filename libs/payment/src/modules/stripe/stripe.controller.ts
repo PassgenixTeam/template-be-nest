@@ -19,6 +19,8 @@ import {
 } from './dto';
 import { CapturePaymentIntentDto } from './dto/capture-payment-intent.dto';
 import { ConfirmPaymentIntentDto } from './dto/confirm-payment-intent.dto';
+import { CreateAccountBankDto } from './dto/create-account-bank.dto';
+import { TransferMoneyDto } from './dto/transfer-money.dto';
 
 @ApiTags('stripe')
 @Controller('stripe')
@@ -33,6 +35,26 @@ export class StripeController {
   @Get('publishable-key')
   getPublishableKey() {
     return this.stripeService.getPublishableKey();
+  }
+
+  @Get('customer/:id')
+  getCustomer(@Param('id') id: string) {
+    return this.stripeService.getCustomer(id);
+  }
+
+  @Get('customer/:id/payment-methods')
+  getCustomerPaymentMethods(@Param('id') id: string) {
+    return this.stripeService.getCustomerPaymentMethods(id);
+  }
+
+  @Post('transfer-money')
+  transferMoney(@Body() input: TransferMoneyDto) {
+    return this.stripeService.transferMoney(input);
+  }
+
+  @Post('create-account-bank')
+  createAccountBank(@Body() input: CreateAccountBankDto) {
+    return this.stripeService.createAccountBank(input);
   }
 
   @Post('create-payment-intent')

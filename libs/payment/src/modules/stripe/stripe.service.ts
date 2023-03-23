@@ -9,6 +9,8 @@ import {
 import { CreateCustomerPaymentDto } from './dto/create-customer-payment.dto';
 import { CapturePaymentIntentDto } from './dto/capture-payment-intent.dto';
 import { ConfirmPaymentIntentDto } from './dto/confirm-payment-intent.dto';
+import { CreateAccountBankDto } from './dto/create-account-bank.dto';
+import { TransferMoneyDto } from './dto/transfer-money.dto';
 @Injectable()
 export class StripeService {
   private readonly stripe: Stripe;
@@ -51,6 +53,90 @@ export class StripeService {
     };
   }
 
+  async createAccountBank(input: CreateAccountBankDto) {
+    const {
+      country,
+      currency,
+      object,
+      accountHolderName,
+      accountHolderType,
+      routingNumber,
+      accountNumber,
+      type,
+      email,
+    } = input;
+    const account = await this.stripe.accounts.create({
+      type: type as any,
+      country: country,
+      email: email,
+      business_type: 'individual',
+      business_profile: {
+        mcc: '5734',
+        product_description: 'test',
+      },
+      tos_acceptance: {
+        date: Math.floor(Date.now() / 1000),
+        ip: '13.112.224.240',
+      },
+      external_account: {
+        object: object,
+        country: country,
+        currency: currency,
+        account_holder_name: accountHolderName,
+        account_holder_type: accountHolderType,
+        routing_number: routingNumber,
+        account_number: accountNumber,
+      },
+      capabilities: {
+        card_payments: { requested: true },
+        transfers: { requested: true },
+      },
+      individual: {
+        dob: {
+          day: 3,
+          month: 11,
+          year: 2000,
+        },
+        email: email,
+        address: {
+          country: 'US',
+          city: 'New York',
+          line1: '128 Frontage Rd, Newark, NJ 07114, Hoa Kỳ',
+          postal_code: '10001',
+          state: 'NY',
+        },
+        first_name: 'Uptimum',
+        last_name: 'win',
+        phone: '2028610737',
+        ssn_last_4: '0000',
+      },
+    });
+
+    return account;
+  }
+
+  async transferMoney(input: TransferMoneyDto) {
+    const { accountId, amount, currency } = input;
+    const transfer = await this.stripe.transfers.create({
+      amount: amount,
+      currency: currency,
+      destination: accountId,
+    });
+
+    console.log(transfer);
+
+    return transfer;
+  }
+
+  async getCustomerPaymentMethods(customerId: string) {
+    const paymentMethods = await this.stripe.paymentMethods.list({
+      customer: customerId,
+      type: 'card',
+    });
+
+    return paymentMethods.data;
+  }
+
   async createPaymentIntent(input: CreatePaymentIntentDto) {
     try {
       const { amount, currency, customerId, paymentMethodId } = input;
@@ -61,10 +147,11 @@ export class StripeService {
         payment_method: paymentMethodId,
         amount: amount,
         currency: currency,
-        capture_method: 'automatic',
+        capture_method: 'manual',
       });
 
       return {
+        paymentIntentId: paymentIntent.id,
         clientSecret: paymentIntent.client_secret,
       };
     } catch (error) {
@@ -127,6 +214,11 @@ export class StripeService {
     return customer;
   }
 
+  async getCustomer(customerId: string) {
+    const customer = await this.stripe.customers.retrieve(customerId);
+    return customer;
+  }
+
   async getPaymentMethods(paymentMethodId: string) {
     const paymentMethod = await this.stripe.paymentMethods.retrieve(
       paymentMethodId,
@@ -162,7 +254,6 @@ export class StripeService {
       const capture = await this.stripe.paymentIntents.capture(
         paymentIntent.id,
       );
-      console.log('capture', capture);
     }
 
     return paymentIntent;
