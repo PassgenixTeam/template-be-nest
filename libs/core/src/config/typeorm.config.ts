@@ -5,6 +5,7 @@ import {
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { appConfig } from './env.config';
+import { SnakeNamingStrategy } from '../strategies/snake-naming.strategy';
 
 const typeOrmOption = (): PostgresConnectionOptions => {
   return {
@@ -14,6 +15,7 @@ const typeOrmOption = (): PostgresConnectionOptions => {
     username: appConfig.database.MY_SQL.DB_USERNAME,
     database: appConfig.database.MY_SQL.DB_DATABASE_NAME,
     password: appConfig.database.MY_SQL.DB_PASSWORD,
+    namingStrategy: new SnakeNamingStrategy(),
     extra: { charset: 'utf8mb4_unicode_ci' },
     synchronize: false,
     logging: appConfig.env === 'development' ? true : false,
