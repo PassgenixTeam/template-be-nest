@@ -34,6 +34,11 @@ const appConfig = {
       STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY || '',
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
     },
+    paypal: {
+      PAYPAL_URL: process.env.PAYPAL_URL || '',
+      PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID || '',
+      PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET || '',
+    },
   },
 };
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PayPal Integration Example</title>
+  </head>
+  <body>
+    <div id="paypal-button-container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=Ab-VSDF5CcI3gVaD0dk2X6zJHifuG-9TriWNbFFx-V_VijGyi8318LwdXoNqsivCx_dhgr7kyoxy3kJs"></script>
+    <script>
+      var orderId = null;
+      paypal
+        .Buttons({
+          createOrder: function (data, actions) {
+            return axios
+              .post('/api/paypal/create-order', {
+                amount: 100,
+              })
+              .then(function (response) {
+                orderId = response.data.data;
+                console.log('orderId', orderId);
+                return response.data.data;
+              });
+          },
+          onApprove: function (data, actions) {
+            return axios
+              .post('/api/paypal/capture-order', {
+                orderId: orderId,
+              })
+              .then(function (response) {
+                alert('Payment completed successfully!');
+              });
+          },
+          onCancel: function (data) {
+            alert('Payment was cancelled.');
+          },
+          onError: function (err) {
+            console.log(err);
+            alert('An error occurred while processing the payment.');
+          },
+        })
+        .render('#paypal-button-container');
+    </script>
+  </body>
+</html>
