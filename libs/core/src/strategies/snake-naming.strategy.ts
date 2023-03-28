@@ -56,10 +56,10 @@ export class SnakeNamingStrategy
   }
 
   // Convert camelCase to snake_case
-  classTableInheritanceParentColumnName(
-    parentTableName: string,
-    parentTableIdPropertyName: string,
-  ): string {
-    return snakeCase(parentTableName + '_' + parentTableIdPropertyName);
-  }
+  // classTableInheritanceParentColumnName(
+  //   parentTableName: string,
+  //   parentTableIdPropertyName: string,
+  // ): string {
+  //   return snakeCase(parentTableName + '_' + parentTableIdPropertyName);
+  // }
 }

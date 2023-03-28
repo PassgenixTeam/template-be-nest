@@ -13,12 +13,12 @@ const routerPathPassAuth = [
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request: Request = context.switchToHttp().getRequest();
+    const req: Request = context.switchToHttp().getRequest();
 
-    const route: string = request.route.path;
-    const method = request.method;
+    const route: string = req.route.path;
+    const method = req.method;
 
-    const bearerToken = request.headers.authorization?.trim();
+    const bearerToken = req.headers.authorization?.trim();
 
     if (
       routerPathPassAuth.some((r) => r.path === route && r.method === method) &&
