@@ -1,6 +1,5 @@
-export enum Role {
-  superadmin = 'superadmin',
-  company = 'company',
-  user = 'user',
-  connector = 'connector',
+export enum ROLE {
+  FREELANCE = 'freelance',
+  CLIENT = 'client',
+  ADMIN = 'admin',
 }

@@ -16,6 +16,12 @@ import { appConfig } from './config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
+// import { RedisService } from './cache';
+import { SessionService } from '../../../src/modules/session/session.service';
+import { SessionEntity } from '../../../src/modules/session/entities/session.entity';
+import { RedisService } from './cache/redis.service';
+import { CacheModule } from './cache/cache.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Global()
 @Module({
@@ -23,10 +29,12 @@ import { MongooseModule } from '@nestjs/mongoose';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../../', 'public').replace('/dist', ''),
     }),
+    TypeOrmModule.forFeature([SessionEntity]),
     //
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     // MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
     //
+    PassportModule,
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: appConfig.jwt.JWT_SECRET_KEY,
@@ -35,9 +43,25 @@ import { MongooseModule } from '@nestjs/mongoose';
         },
       }),
     }),
+    CacheModule.register(),
   ],
   controllers: [],
-  providers: [JwtAuthGuard, RolesGuard, JwtStrategy, JwtService],
+  providers: [
+    JwtAuthGuard,
+    RolesGuard,
+    JwtService,
+    JwtStrategy,
+    SessionService,
+  ],
+
+  exports: [
+    CacheModule,
+    PassportModule,
+    JwtModule,
+    JwtAuthGuard,
+    RolesGuard,
+    JwtStrategy,
+  ],
 })
 export class CoreModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

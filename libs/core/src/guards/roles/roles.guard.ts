@@ -1,14 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { isEmpty } from 'lodash';
-import { Role } from '../../../../common/src/enums/role.enum';
+import { ROLE } from '@app/common';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const roles = this.reflector.get<Role[]>('roles', context.getHandler());
+    const roles = this.reflector.get<ROLE[]>('roles', context.getHandler());
     const request = context.switchToHttp().getRequest();
     if (isEmpty(roles)) {
       return true;
@@ -21,7 +21,7 @@ export class RolesGuard implements CanActivate {
     return true;
   }
 
-  private hasRole(role: Role, roles: Role[]) {
+  private hasRole(role: ROLE, roles: ROLE[]) {
     return roles.includes(role);
   }
 }

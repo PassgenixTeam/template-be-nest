@@ -26,7 +26,8 @@ const appConfig = {
   },
   jwt: {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY || 'abcxyz',
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '30d',
+    JWT_EXPIRES_IN: +process.env.JWT_EXPIRES_IN || 8640000000,
+    JWT_REFRESH_EXPIRES_IN: +process.env.JWT_REFRESH_EXPIRES_IN || 8640000000,
   },
   payment: {
     stripe: {
@@ -39,6 +40,11 @@ const appConfig = {
       PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID || '',
       PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET || '',
     },
+  },
+  redis: {
+    REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+    REDIS_PORT: process.env.REDIS_PORT || 6379,
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD || '',
   },
 };
 

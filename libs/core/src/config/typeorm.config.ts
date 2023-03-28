@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { appConfig } from './env.config';
 import { SnakeNamingStrategy } from '../strategies/snake-naming.strategy';
+import { join } from 'path';
 
 const typeOrmOption = (): PostgresConnectionOptions => {
   return {
@@ -18,6 +19,9 @@ const typeOrmOption = (): PostgresConnectionOptions => {
     namingStrategy: new SnakeNamingStrategy(),
     extra: { charset: 'utf8mb4_unicode_ci' },
     synchronize: false,
+    entities: [
+      join(__dirname + '../../../../../src/modules/**/*.entity{.ts,.js}'),
+    ],
     logging: appConfig.env === 'development' ? true : false,
   };
 };
