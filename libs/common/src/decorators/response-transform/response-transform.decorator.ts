@@ -4,10 +4,11 @@ export const ResponseTransform =
   <T>(TargetArg: ClassConstructor<T>) =>
   (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const original = descriptor.value;
-    descriptor.value = async function () {
-      const result = await original.apply(this);
+    descriptor.value = async function (...args: any[]) {
+      const result = await original.apply(this, args);
 
-      return plainToClass(TargetArg, result, { excludeExtraneousValues: true });
+      return result;
     };
+
     return descriptor;
   };

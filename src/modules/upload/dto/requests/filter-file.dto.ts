@@ -4,7 +4,7 @@ import { EnumTransform } from '@app/common';
 import { FILE_STATUS } from '../../enum/upload.enum';
 
 export class FilterFileDto {
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, enum: FILE_STATUS })
   @IsOptional()
   @IsEnum(FILE_STATUS)
   @EnumTransform(FILE_STATUS)
