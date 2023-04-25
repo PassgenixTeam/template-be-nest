@@ -6,4 +6,4 @@ export * from './global-cache/global-cache.decorator';
 export * from './non-empty-transform/non-empty-transform.decorator';
 export * from './pagination/pagination.decorator';
 export * from './pagination/pagination.model';
-export * from './response-transform';
+export * from './response-transform/response-transform.decorator';
