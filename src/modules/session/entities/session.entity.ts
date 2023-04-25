@@ -5,10 +5,10 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity({ name: 'sessions' })
 export class SessionEntity extends BaseEntity {
-  @Column()
+  @Column({ type: 'varchar', length: 1000 })
   accessToken: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 1000 })
   refreshToken: string;
 
   @Column({ type: 'timestamp without time zone', nullable: true })

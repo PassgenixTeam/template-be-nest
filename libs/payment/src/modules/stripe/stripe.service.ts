@@ -123,8 +123,6 @@ export class StripeService {
       destination: accountId,
     });
 
-    console.log(transfer);
-
     return transfer;
   }
 

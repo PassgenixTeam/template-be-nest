@@ -11,6 +11,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
+  ApiOkResponse,
   ApiOperation,
   ApiPayloadTooLargeResponse,
   ApiTags,
@@ -18,7 +19,8 @@ import {
 import { UploadService } from './upload.service';
 import { Auth, AuthUser } from '../../../libs/core/src';
 import { multerMemoryOption } from '../../../libs/common/src';
-import { FilterFileDto } from './dto/filter-file.dto';
+import { FilterFileDto } from './dto/requests/filter-file.dto';
+import { FileResponseDto } from 'src/modules/upload/dto/responses/files.response.dto';
 
 @ApiTags('uploads')
 @Controller('uploads')
@@ -27,6 +29,10 @@ export class UploadController {
 
   @ApiOperation({ summary: 'Get a upload all' })
   @Get('')
+  @ApiOkResponse({
+    description: 'The record has been successfully get all.',
+    type: FileResponseDto,
+  })
   async getAll(@Query() filter: FilterFileDto) {
     return this.uploadService.getAll(filter);
   }

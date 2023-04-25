@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.enableCors();
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   app.useGlobalInterceptors(new TransformInterceptor());
 

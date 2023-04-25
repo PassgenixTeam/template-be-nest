@@ -4,12 +4,12 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
-import { BaseController } from '../base';
 import { ERROR } from '../enums/error.enum';
+import { ErrorCustom } from '@app/common/base';
 
 @Catch()
 export class AllExceptionsFilter
-  extends BaseController
+  extends ErrorCustom
   implements ExceptionFilter
 {
   constructor() {
@@ -21,7 +21,14 @@ export class AllExceptionsFilter
     const response = ctx.getResponse();
     const status = exception.getStatus ? exception.getStatus() : 500;
 
-    const { errorCode, message } = this.messageCode(exception);
+    let { errorCode, message } = this.messageCode(exception);
+
+    // temporary treatment
+    if (exception?.getResponse?.()['message']) {
+      errorCode = exception.getResponse()['statusCode'];
+      message = exception.getResponse()['message'];
+    }
+    //
 
     response.status(status).json({
       statusCode: status,
