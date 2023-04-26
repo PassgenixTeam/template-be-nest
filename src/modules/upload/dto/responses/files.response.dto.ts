@@ -1,13 +1,8 @@
-import { BaseResponseDto } from '@app/common/base/response.base';
+import { BaseResponseDto, ResponseDto } from '@app/common/base/response.base';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { UploadEntity } from 'src/modules/upload/entities/upload.entity';
 
-export class FilesDto {
-  @Expose()
-  @ApiResponseProperty({ type: 'string', format: 'uuid' })
-  id: string;
-
+export class FilesDto extends BaseResponseDto {
   @Expose()
   @ApiResponseProperty({ type: 'string', example: 'image/png' })
   type: string;
@@ -32,7 +27,7 @@ export class FilesDto {
   key: string;
 }
 
-export class FileResponseDto extends BaseResponseDto {
+export class FileResponseDto extends ResponseDto {
   @ApiResponseProperty({ type: FilesDto })
   data: FilesDto;
 }

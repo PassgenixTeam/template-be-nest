@@ -26,9 +26,7 @@ export class UploadService {
       query.andWhere('upload.status = :status', { status });
     }
 
-    const data = await query.getMany();
-
-    return instanceToPlain(data);
+    return query.getMany();
   }
 
   async create(files: Express.Multer.File[]) {

@@ -1,4 +1,8 @@
-import { ClassConstructor, plainToClass } from 'class-transformer';
+import {
+  ClassConstructor,
+  plainToClass,
+  plainToInstance,
+} from 'class-transformer';
 
 export const ResponseTransform =
   <T>(TargetArg: ClassConstructor<T>) =>
@@ -7,7 +11,9 @@ export const ResponseTransform =
     descriptor.value = async function (...args: any[]) {
       const result = await original.apply(this, args);
 
-      return result;
+      return plainToInstance(TargetArg, result, {
+        excludeExtraneousValues: true,
+      });
     };
 
     return descriptor;

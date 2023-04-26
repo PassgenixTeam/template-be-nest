@@ -1,6 +1,6 @@
 export enum RoleType {
-  read,
-  write,
-  edit,
-  delete,
+  CREATE = 'CREATE',
+  READ = 'READ',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
 }
