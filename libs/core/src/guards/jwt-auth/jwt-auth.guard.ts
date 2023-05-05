@@ -1,29 +1,24 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { HTTP_METHOD } from '../../../../common/src/enums/http-method.enum';
-
-const routerPathPassAuth = [
-  // {
-  //   path: '',
-  //   method: HTTP_METHOD.GET,
-  // }
-];
+import { Reflector } from '@nestjs/core';
+import { ROLE } from '@app/common';
+import { ROLES_KEY } from '@app/common/constants/constant';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req: Request = context.switchToHttp().getRequest();
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
 
-    const route: string = req.route.path;
-    const method = req.method;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const roles = this.reflector.get<ROLE[]>(ROLES_KEY, context.getHandler());
+
+    const req: Request = context.switchToHttp().getRequest();
 
     const bearerToken = req.headers.authorization?.trim();
 
-    if (
-      routerPathPassAuth.some((r) => r.path === route && r.method === method) &&
-      !bearerToken
-    ) {
+    if (roles.includes(ROLE.GUEST) && !bearerToken) {
       return true;
     }
 

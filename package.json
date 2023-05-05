@@ -25,7 +25,8 @@
     "seed:run": "yarn run typeorm migration:run -d src/database/seed.config.ts",
     "database:init": "yarn migration:generate && yarn migration:run && yarn seed:run",
     "migration:auto": "yarn migration:generate && yarn migration:run",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "fix-husky": "npx husky set .husky/pre-commit 'yarn lint-staged'"
   },
   "dependencies": {
     "@nestjs/axios": "^2.0.0",
