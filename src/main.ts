@@ -20,14 +20,14 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const options = new DocumentBuilder()
-    .setTitle('G2K User API')
-    .setDescription('G2K User API description')
-    .setVersion('1.0.0')
+    .setTitle(appConfig.swagger.SWAGGER_TITLE)
+    .setDescription(appConfig.swagger.SWAGGER_DESCRIPTION)
+    .setVersion(appConfig.swagger.SWAGGER_VERSION)
     .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs', app, document, {
+  SwaggerModule.setup(appConfig.swagger.SWAGGER_PATH, app, document, {
     customCssUrl: '/css/swagger.custom.css',
   });
 
