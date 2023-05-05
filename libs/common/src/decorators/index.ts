@@ -7,3 +7,5 @@ export * from './non-empty-transform/non-empty-transform.decorator';
 export * from './pagination/pagination.decorator';
 export * from './pagination/pagination.model';
 export * from './response-transform/response-transform.decorator';
+export * from './string-transform/string-parse-object.decorator';
+export * from './string-transform/object-parse-string.decorator';
