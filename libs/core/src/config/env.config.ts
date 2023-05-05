@@ -11,6 +11,13 @@ const appConfig = {
     PORT: process.env.PORT || 3000,
     HOST: process.env.HOST || 'localhost',
   },
+  swagger: {
+    SWAGGER_TITLE: process.env.SWAGGER_TITLE || 'NestJS API',
+    SWAGGER_DESCRIPTION:
+      process.env.SWAGGER_DESCRIPTION || 'NestJS API description',
+    SWAGGER_VERSION: process.env.SWAGGER_VERSION || '1.0.0',
+    SWAGGER_PATH: process.env.SWAGGER_PATH || 'docs',
+  },
   database: {
     MY_SQL: {
       DB_TYPE: process.env.DB_TYPE || 'postgres',
