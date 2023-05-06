@@ -1,5 +1,5 @@
-import { Transform } from 'class-transformer';
-import { isJSON } from 'class-validator';
+import { Transform, TransformOptions } from 'class-transformer';
+import { isArray, isJSON } from 'class-validator';
 
 /**
  * A class representing a string transformation object.
@@ -8,12 +8,14 @@ import { isJSON } from 'class-validator';
  * const plainObj = transformObj.transform({ value: '{"name": "John", "age": 30}' });
  * console.log(plainObj); // { name: "John", age: 30 }
  */
-export const StringTransformObject = () =>
+export const StringTransformToObject = (option?: TransformOptions) =>
   Transform(
     ({ value }) => {
-      if (typeof value === 'string' && isJSON(value)) return JSON.parse(value);
+      if (typeof value === 'string' && (isJSON(value) || isArray(value)))
+        return JSON.parse(value);
     },
     {
       toPlainOnly: true,
+      ...option,
     },
   );
