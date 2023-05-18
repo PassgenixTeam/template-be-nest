@@ -1,5 +1,6 @@
 import { existsSync, unlinkSync } from 'fs';
 import * as _ from 'lodash';
+import slugify from 'slugify';
 
 export const removeKeyUndefined = (data: any) => {
   Object.keys(data).forEach((key) => {
@@ -74,4 +75,25 @@ export const isJson = (str: string) => {
     return false;
   }
   return true;
+};
+
+/**
+
+Convert a string to a slug.
+@param str - The string to convert.
+@returns The converted slug string.
+@example
+const myString = 'Welcome to OpenAI';
+const mySlug = stringToSlug(myString);
+console.log(mySlug); // Output: welcome-to-openai
+*/
+export const stringToSlug = (str: string) => {
+  return slugify('some string', {
+    replacement: '-', // replace spaces with replacement character, defaults to `-`
+    remove: undefined, // remove characters that match regex, defaults to `undefined`
+    lower: false, // convert to lower case, defaults to `false`
+    strict: false, // strip special characters except replacement, defaults to `false`
+    locale: 'vi', // language code of the locale to use
+    trim: true, // trim leading and trailing replacement chars, defaults to `true`
+  });
 };
