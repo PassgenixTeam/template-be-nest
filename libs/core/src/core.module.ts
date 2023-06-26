@@ -32,7 +32,7 @@ import { PassportModule } from '@nestjs/passport';
     TypeOrmModule.forFeature([SessionEntity]),
     //
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
-    // MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
+    MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
     //
     PassportModule,
     JwtModule.registerAsync({
