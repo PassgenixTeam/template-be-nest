@@ -1,3 +1,5 @@
+import { FilterQuery, ProjectionType, QueryOptions } from 'mongoose';
+
 export interface FindAllResponse<T> {
   items: T[];
   total: number;
@@ -5,9 +7,17 @@ export interface FindAllResponse<T> {
 
 export interface BaseRepositoryInterface<T> {
   create(data: T): Promise<T>;
+
   findAll(
-    conditions?: Record<string, unknown>,
-    projection?: Record<string, unknown>,
+    filter: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
+  ): Promise<T[]>;
+
+  findAllAndCount(
+    filter: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
   ): Promise<FindAllResponse<T>>;
 
   findOne(
@@ -25,6 +35,11 @@ export interface BaseRepositoryInterface<T> {
   ): Promise<T>;
 
   remove(id: string): Promise<T>;
+
+  removeMany(
+    filter?: FilterQuery<T>,
+    options?: QueryOptions<T>,
+  ): Promise<boolean>;
 
   softRemove(id: string): Promise<T>;
 }

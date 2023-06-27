@@ -1,60 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { S3UploadService } from '../../../libs/upload/src';
 import { FILE_STATUS } from './enum/upload.enum';
-import { UploadEntity } from './entities/upload.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { FilterFileDto } from './dto/requests/filter-file.dto';
 import { FilesDto } from 'src/modules/upload/dto/responses/files.response.dto';
 import { ResponseTransform } from '@app/common';
-import { instanceToPlain } from 'class-transformer';
+import { UploadRepository } from 'src/modules/upload/upload.repository';
+import { FilterQuery } from 'mongoose';
+import { Upload } from 'src/modules/upload/schema/upload.schema';
 
 @Injectable()
 export class UploadService {
   constructor(
-    @InjectRepository(UploadEntity)
-    private readonly uploadEntity: Repository<UploadEntity>,
+    private readonly uploadRepository: UploadRepository,
     private readonly s3UploadService: S3UploadService,
   ) {}
 
   @ResponseTransform<FilesDto>(FilesDto)
   async getAll(filter: FilterFileDto) {
     const { status } = filter;
-    const query = this.uploadEntity.createQueryBuilder('upload');
+    const query: FilterQuery<Upload> = {};
 
     if (status) {
-      query.andWhere('upload.status = :status', { status });
+      query.status = status;
     }
 
-    return query.getMany();
+    return this.uploadRepository.findAll(query);
   }
 
   async create(files: Express.Multer.File[]) {
     const s3Files = await this.s3UploadService.s3UploadMultiple(files);
     const newUploads = s3Files.map(async (file, i) => {
-      const upload = this.uploadEntity.create({
+      return this.uploadRepository.create({
         url: file.Location,
         key: file.Key,
         status: FILE_STATUS.PENDING,
         size: files[i].size,
         type: files[i].mimetype,
       });
-
-      return this.uploadEntity.save(upload);
     });
 
     return Promise.all(newUploads);
   }
 
   async removeAll() {
-    const files = await this.uploadEntity.find({
-      where: [{ status: FILE_STATUS.PENDING }, { status: FILE_STATUS.DELETED }],
+    const files = await this.uploadRepository.findAll({
+      $or: [{ status: FILE_STATUS.PENDING }, { status: FILE_STATUS.DELETED }],
     });
 
     await this.s3UploadService.deleteFiles(
       files.map((file) => ({ Key: file.key })),
     );
 
-    return this.uploadEntity.delete(files.map((file) => file.id));
+    return this.uploadRepository.removeMany(
+      files.map((file) => ({ _id: file._id })),
+    );
   }
 }

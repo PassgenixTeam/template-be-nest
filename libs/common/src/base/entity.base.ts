@@ -5,21 +5,21 @@ import { User } from 'src/modules/user/schema/user.schema';
 
 export class BaseEntity {
   @Expose()
-  id?: string;
+  _id?: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   @Expose()
-  createdBy: string | Record<string, any>;
+  createdBy?: string | Record<string, any>;
 
   @Prop({ type: Date, default: Date.now() })
   @Expose()
-  updatedBy: string;
+  updatedBy?: string;
 
   @Prop({ type: Date })
   @Expose()
-  deletedAt: Date;
+  deletedAt?: Date;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   @Expose()
-  deletedBy: string;
+  deletedBy?: string;
 }

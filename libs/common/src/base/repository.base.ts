@@ -3,7 +3,7 @@ import {
   BaseRepositoryInterface,
   FindAllResponse,
 } from '@app/common/interfaces/base-repository.interface';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, ProjectionType, QueryOptions } from 'mongoose';
 
 export abstract class BaseRepository<T extends BaseEntity>
   implements BaseRepositoryInterface<T>
@@ -18,12 +18,21 @@ export abstract class BaseRepository<T extends BaseEntity>
   }
 
   async findAll(
-    conditions?: Record<string, unknown>,
-    projection?: Record<string, unknown>,
+    filter: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
+  ): Promise<T[]> {
+    return this.model.find(filter, projection, options).exec();
+  }
+
+  async findAllAndCount(
+    filter: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
   ): Promise<FindAllResponse<T>> {
     const [items, total] = await Promise.all([
-      this.model.find(conditions, projection).exec(),
-      this.model.countDocuments(conditions).exec(),
+      this.model.find(filter, projection, options).exec(),
+      this.model.countDocuments(filter).exec(),
     ]);
 
     return { items, total };
@@ -55,6 +64,16 @@ export abstract class BaseRepository<T extends BaseEntity>
 
   async remove(id: string): Promise<T> {
     return this.model.findByIdAndDelete(id).exec();
+  }
+
+  async removeMany(
+    filter?: FilterQuery<T>,
+    options?: QueryOptions<T>,
+  ): Promise<boolean> {
+    const { deletedCount } = await this.model
+      .deleteMany(filter, options)
+      .exec();
+    return deletedCount > 0;
   }
 
   async softRemove(id: string): Promise<T> {
