@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@app/common';
-import { UserEntity } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/schema/user.schema';
 
 @Entity({ name: 'sessions' })
 export class SessionEntity extends BaseEntity {

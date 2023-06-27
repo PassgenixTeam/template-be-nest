@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../user/schema/user.schema';
 import { Repository } from 'typeorm';
 import { TokenPayload, sha512 } from '../../../libs/common/src';
 import { RegisterDto } from './dto/register.dto';

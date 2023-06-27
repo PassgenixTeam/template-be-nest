@@ -1,4 +1,4 @@
-import { UserEntity } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/schema/user.schema';
 
 export class CreateSessionDto {
   accessToken: string;

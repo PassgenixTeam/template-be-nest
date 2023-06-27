@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserEntity } from '../../../../src/modules/user/entities/user.entity';
+import { UserEntity } from '../../../../src/modules/user/schema/user.schema';
 
 type UserField = keyof UserEntity;
 

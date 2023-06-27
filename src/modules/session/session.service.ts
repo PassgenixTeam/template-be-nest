@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UserTokenDto } from './dto/user-token.dto';
 import { REDIS_PROVIDER, appConfig } from '@app/core';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../user/schema/user.schema';
 import { SessionEntity } from './entities/session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository, UpdateResult } from 'typeorm';

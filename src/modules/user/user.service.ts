@@ -1,19 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ERROR } from '@app/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { UserRepository } from 'src/modules/user/user.repository';
+import { User } from 'src/modules/user/schema/user.schema';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
-  ) {}
+  constructor(private userRepository: UserRepository) {}
 
-  async profile(user: UserEntity) {
+  async profile(user: User) {
     delete user.loginSession;
     delete user.cacheId;
     return user;
