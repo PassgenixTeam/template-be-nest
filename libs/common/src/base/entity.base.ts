@@ -1,13 +1,15 @@
-import { Prop } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
 import mongoose from 'mongoose';
-import { User } from 'src/modules/user/schema/user.schema';
+import { IBase } from 'src/shared/bussiness/base';
+import { USER_COLLECTION } from 'src/shared/bussiness/user';
 
-export class BaseEntity {
+@Schema({ timestamps: true, versionKey: false })
+export class BaseEntity implements IBase {
   @Expose()
   _id?: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: USER_COLLECTION })
   @Expose()
   createdBy?: string | Record<string, any>;
 
@@ -15,11 +17,13 @@ export class BaseEntity {
   @Expose()
   updatedBy?: string;
 
-  @Prop({ type: Date })
+  @Prop({ type: Date, default: null })
   @Expose()
   deletedAt?: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: USER_COLLECTION })
   @Expose()
   deletedBy?: string;
 }
+
+export const BaseSchema = SchemaFactory.createForClass(BaseEntity);

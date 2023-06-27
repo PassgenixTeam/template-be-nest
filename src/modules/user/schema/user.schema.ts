@@ -1,13 +1,16 @@
-import { SessionEntity } from '../../session/entities/session.entity';
 import { Expose } from 'class-transformer';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { BaseEntity, ROLE } from '@app/common';
 import { HydratedDocument } from 'mongoose';
+import { Session } from 'src/modules/session/schema/session.schema';
+import { IUser } from 'src/shared/bussiness/user';
 
 export type UserDocument = HydratedDocument<User>;
-
-@Schema({ timestamps: true, versionKey: false })
-export class User extends BaseEntity {
+@Schema({
+  timestamps: true,
+  versionKey: false,
+})
+export class User extends BaseEntity implements IUser {
   @Expose()
   @Prop({ type: String })
   password: string;
@@ -42,7 +45,7 @@ export class User extends BaseEntity {
   role: ROLE;
 
   @Expose()
-  loginSession: SessionEntity;
+  loginSession: Session;
 
   @Expose()
   cacheId: string;

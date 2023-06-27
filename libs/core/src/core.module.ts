@@ -15,9 +15,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
 // import { RedisService } from './cache';
-import { SessionService } from '../../../src/modules/session/session.service';
 import { CacheModule } from './cache/cache.module';
 import { PassportModule } from '@nestjs/passport';
+import { SessionModule } from 'src/modules/session/session.module';
 
 @Global()
 @Module({
@@ -38,15 +38,10 @@ import { PassportModule } from '@nestjs/passport';
       }),
     }),
     CacheModule.register(),
+    SessionModule,
   ],
   controllers: [],
-  providers: [
-    JwtAuthGuard,
-    RolesGuard,
-    JwtService,
-    JwtStrategy,
-    SessionService,
-  ],
+  providers: [JwtAuthGuard, RolesGuard, JwtService, JwtStrategy],
 
   exports: [
     CacheModule,

@@ -3,7 +3,13 @@ import {
   BaseRepositoryInterface,
   FindAllResponse,
 } from '@app/common/interfaces/base-repository.interface';
-import { FilterQuery, Model, ProjectionType, QueryOptions } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  ProjectionType,
+  QueryOptions,
+  UpdateQuery,
+} from 'mongoose';
 
 export abstract class BaseRepository<T extends BaseEntity>
   implements BaseRepositoryInterface<T>
@@ -39,31 +45,50 @@ export abstract class BaseRepository<T extends BaseEntity>
   }
 
   async findOne(
-    conditions?: Record<string, unknown>,
-    projection?: Record<string, unknown>,
+    filter?: FilterQuery<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
   ): Promise<T> {
-    const item = await this.model.findOne(conditions, projection).exec();
-    return item.deletedAt ? null : item;
+    const item = (await this.model
+      .findOne(filter, projection, options)
+      .lean()
+      .exec()) as T;
+
+    return item?.deletedAt ? null : item;
   }
 
   async findOneById(id: string): Promise<T> {
-    const item = await this.model.findById(id).exec();
-    return item.deletedAt ? null : item;
+    const item = (await this.model.findById(id).lean().exec()) as T;
+    return item?.deletedAt ? null : item;
   }
 
-  async updateById(id: string, data: T): Promise<T> {
-    return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
+  async updateById(
+    id?: any,
+    update?: UpdateQuery<T>,
+    options?: QueryOptions<T>,
+  ): Promise<T> {
+    const item = (await this.model
+      .findByIdAndUpdate(id, update, { new: true, ...options })
+      .lean()
+      .exec()) as T;
+
+    return item;
   }
 
   async updateOne(
-    conditions: Record<string, unknown>,
-    data: Record<string, unknown>,
+    filter?: FilterQuery<T>,
+    update?: UpdateQuery<T>,
+    options?: QueryOptions<T>,
   ): Promise<T> {
-    return this.model.findOneAndUpdate(conditions, data).exec();
+    const item = (await this.model
+      .findOneAndUpdate(filter, update, options)
+      .lean()
+      .exec()) as T;
+    return item;
   }
 
   async remove(id: string): Promise<T> {
-    return this.model.findByIdAndDelete(id).exec();
+    return (await this.model.findByIdAndDelete(id).lean().exec()) as T;
   }
 
   async removeMany(
@@ -77,10 +102,14 @@ export abstract class BaseRepository<T extends BaseEntity>
   }
 
   async softRemove(id: string): Promise<T> {
-    return this.model.findByIdAndUpdate(
+    return (await this.model.findByIdAndUpdate(
       id,
       { deletedAt: new Date() },
       { new: true },
-    );
+    )) as T;
+  }
+
+  getMongoModel(): Model<T> {
+    return this.model;
   }
 }

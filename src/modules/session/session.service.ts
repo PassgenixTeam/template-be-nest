@@ -1,30 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UserTokenDto } from './dto/user-token.dto';
-import { REDIS_PROVIDER, appConfig } from '@app/core';
-import { UserEntity } from '../user/schema/user.schema';
-import { SessionEntity } from './entities/session.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository, UpdateResult } from 'typeorm';
+import { appConfig } from '@app/core';
 import { RedisService } from '../../../libs/core/src/cache/redis.service';
+import { User } from 'src/modules/user/schema/user.schema';
+import { SessionRepository } from 'src/modules/session/session.repository';
+import { Session } from 'src/modules/session/schema/session.schema';
 
 @Injectable()
 export class SessionService {
   constructor(
-    @InjectRepository(SessionEntity)
-    private readonly sessionEntity: Repository<SessionEntity>,
+    private readonly sessionRepository: SessionRepository,
     private readonly redisService: RedisService,
   ) {}
 
   async create(createSessionDto: CreateSessionDto) {
     const { accessToken, refreshToken, user } = createSessionDto;
-    const session = this.sessionEntity.create({
+    return this.sessionRepository.create({
       accessToken,
       refreshToken,
-      user,
+      idUser: user._id,
+      expiredAt: null,
     });
-
-    return this.sessionEntity.save(session);
   }
 
   async validateSession(payload: UserTokenDto) {
@@ -32,25 +29,28 @@ export class SessionService {
     const cacheSessionJson = await this.redisService.get(cacheId);
 
     if (cacheSessionJson) {
-      const cacheSession: UserEntity = JSON.parse(cacheSessionJson);
+      const cacheSession: User = JSON.parse(cacheSessionJson);
       if (
         cacheSession?.loginSession?.accessToken === token &&
-        cacheSession.id === userId
+        cacheSession._id === userId
       ) {
         return cacheSession;
       }
     }
 
-    const session = await this.sessionEntity.findOne({
-      where: {
-        user: {
-          id: userId,
-        },
-        expiredAt: IsNull(),
+    const session = await this.sessionRepository.findOne(
+      {
+        idUser: userId,
+        expiredAt: null,
         accessToken: token,
       },
-      relations: ['user'],
-    });
+      null,
+      {
+        populate: {
+          path: 'user',
+        },
+      },
+    );
 
     if (session) {
       const user = session.user;
@@ -69,28 +69,26 @@ export class SessionService {
         appConfig.jwt.JWT_EXPIRES_IN ?? undefined,
       );
 
-      return data as UserEntity;
+      return data as User;
     }
   }
 
-  async findToken(id: string, token: string): Promise<SessionEntity> {
-    return this.sessionEntity.findOne({
-      where: { user: { id }, refreshToken: token, expiredAt: IsNull() },
+  async findToken(id: string, token: string): Promise<Session> {
+    return this.sessionRepository.findOne({
+      idUser: id,
+      refreshToken: token,
+      expiredAt: null,
     });
   }
 
   async invalidAllSessionByUserId(userId: string): Promise<boolean> {
-    return (
-      (
-        await this.sessionEntity.update(
-          { user: { id: userId }, expiredAt: IsNull() },
-          { expiredAt: new Date() },
-        )
-      ).affected > 0
+    return !!this.sessionRepository.updateOne(
+      { idU: userId, expiredAt: null },
+      { expiredAt: new Date() },
     );
   }
 
-  async invalidSession(id: string): Promise<UpdateResult> {
-    return this.sessionEntity.update(id, { expiredAt: new Date() });
+  async invalidSession(id: string): Promise<Session> {
+    return this.sessionRepository.updateById(id, { expiredAt: new Date() });
   }
 }

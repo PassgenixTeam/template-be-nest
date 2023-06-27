@@ -61,7 +61,7 @@ export class UploadController {
   @Post()
   upload(
     @UploadedFiles() files: Express.Multer.File[],
-    @AuthUser('id') userId: string,
+    @AuthUser('_id') userId: string,
   ) {
     return this.uploadService.create(files);
   }

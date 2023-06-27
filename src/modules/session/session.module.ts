@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
-import { SessionService } from './session.service';
-import { SessionEntity } from './entities/session.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
+import {
+  Session,
+  SessionSchema,
+} from 'src/modules/session/schema/session.schema';
+import { SessionRepository } from 'src/modules/session/session.repository';
+import { SessionService } from 'src/modules/session/session.service';
 
 @Module({
-  imports: [],
+  imports: [
+    MongooseModule.forFeature([{ name: Session.name, schema: SessionSchema }]),
+  ],
   controllers: [],
-  providers: [],
+  providers: [SessionRepository, SessionService],
+  exports: [SessionRepository, SessionService],
 })
 export class SessionModule {}

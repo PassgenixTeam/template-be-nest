@@ -1,20 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../user/schema/user.schema';
-import { Repository } from 'typeorm';
 import { TokenPayload, sha512 } from '../../../libs/common/src';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService, appConfig } from '../../../libs/core/src';
 import { SessionService } from '../session/session.service';
 import { v4 as uuidV4 } from 'uuid';
+import { UserRepository } from 'src/modules/user/user.repository';
+import { User } from 'src/modules/user/schema/user.schema';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    private userRepository: UserRepository,
     private jwtService: JwtService,
     private sessionService: SessionService,
     private redisService: RedisService,
@@ -23,8 +22,8 @@ export class AuthService {
   async login(input: LoginDto) {
     const { email, password } = input;
 
-    const user = await this.usersRepository.findOne({
-      where: { email },
+    const user = await this.userRepository.findOne({
+      email,
     });
 
     if (!user) {
@@ -56,25 +55,36 @@ export class AuthService {
 
   async register(input: RegisterDto) {
     const { email, password, firstName, lastName } = input;
-
-    const isExistsEmail = await this.usersRepository.findOne({
+    console.log(
+      plainToInstance(User, {
+        email,
+        password: sha512(password),
+        firstName,
+        lastName,
+        isActive: false,
+      }),
+    );
+    const isExistsEmail = await this.userRepository.findOne({
       where: { email },
     });
     if (isExistsEmail) {
       throw new Error('Email is already exist');
     }
 
-    return this.usersRepository.save({
-      email,
-      password: sha512(password),
-      firstName,
-      lastName,
-    });
+    return this.userRepository.create(
+      plainToInstance(User, {
+        email,
+        password: sha512(password),
+        firstName,
+        lastName,
+        isActive: false,
+      }),
+    );
   }
 
-  createAccessToken(user: UserEntity): string {
+  createAccessToken(user: User): string {
     const token = this.jwtService.sign(
-      { uid: user.id, cacheId: uuidV4() },
+      { uid: user._id, cacheId: uuidV4() },
       {
         expiresIn: appConfig.jwt.JWT_EXPIRES_IN,
         secret: appConfig.jwt.JWT_SECRET_KEY,
@@ -83,9 +93,9 @@ export class AuthService {
     return token;
   }
 
-  createRefreshToken(user: UserEntity) {
+  createRefreshToken(user: User) {
     const token = this.jwtService.sign(
-      { uid: user.id },
+      { uid: user._id },
       {
         expiresIn: appConfig.jwt.JWT_EXPIRES_IN,
         secret: appConfig.jwt.JWT_SECRET_KEY,
@@ -112,23 +122,23 @@ export class AuthService {
 
     await this.redisService.del(payloadAccessToken.cacheId);
 
-    await this.sessionService.invalidSession(isValidSession.id);
+    await this.sessionService.invalidSession(isValidSession._id);
     const accessToken = this.createAccessToken({
-      id: payloadRefreshToken.uid,
-    } as UserEntity);
+      _id: payloadRefreshToken.uid,
+    } as User);
 
     const refreshToken = this.isTokenExpired(payloadRefreshToken)
       ? this.createRefreshToken({
-          id: payloadRefreshToken.uid,
-        } as UserEntity)
+          _id: payloadRefreshToken.uid,
+        } as User)
       : token;
 
     await this.sessionService.create({
       accessToken,
       refreshToken,
       user: {
-        id: payloadRefreshToken.uid,
-      } as UserEntity,
+        _id: payloadRefreshToken.uid,
+      } as User,
     });
 
     return {

@@ -26,17 +26,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req: Request, payload: any): Promise<any> {
-    const { uid, cacheId } = payload;
-    const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-    const user = await this.sessionService.validateSession({
-      userId: uid,
-      cacheId,
-      token: accessToken,
-    });
+    try {
+      const { uid, cacheId } = payload;
+      const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+      const user = await this.sessionService.validateSession({
+        userId: uid,
+        cacheId,
+        token: accessToken,
+      });
 
-    if (!user) {
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+      return { ...user, cacheId };
+    } catch (error) {
+      console.log('error', error);
+
       throw new UnauthorizedException();
     }
-    return { ...user, cacheId };
   }
 }

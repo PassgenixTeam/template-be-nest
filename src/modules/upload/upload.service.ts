@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { S3UploadService } from '../../../libs/upload/src';
-import { FILE_STATUS } from './enum/upload.enum';
 import { FilterFileDto } from './dto/requests/filter-file.dto';
 import { FilesDto } from 'src/modules/upload/dto/responses/files.response.dto';
 import { ResponseTransform } from '@app/common';
 import { UploadRepository } from 'src/modules/upload/upload.repository';
 import { FilterQuery } from 'mongoose';
 import { Upload } from 'src/modules/upload/schema/upload.schema';
+import { FILE_STATUS } from 'src/shared/bussiness/upload';
 
 @Injectable()
 export class UploadService {

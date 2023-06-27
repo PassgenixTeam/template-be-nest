@@ -1,26 +1,25 @@
-import { Column, Entity } from 'typeorm';
-import { FILE_STATUS } from '../enum/upload.enum';
 import { BaseEntity } from '@app/common';
-import { Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { FILE_STATUS, IUpload } from 'src/shared/bussiness/upload';
 
 export type UploadDocument = HydratedDocument<Upload>;
 
 @Schema({ timestamps: true, versionKey: false })
-export class Upload extends BaseEntity {
-  @Column({ type: 'varchar', length: 50 })
+export class Upload extends BaseEntity implements IUpload {
+  @Prop({ type: String })
   type: string;
 
-  @Column({ type: 'float' })
+  @Prop({ type: Number })
   size: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Prop({ type: String })
   url: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Prop({ type: String })
   key: string;
 
-  @Column({ type: 'enum', enum: FILE_STATUS })
+  @Prop({ type: String, enum: FILE_STATUS })
   status: FILE_STATUS;
 }
 
