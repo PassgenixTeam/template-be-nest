@@ -9,6 +9,7 @@ import {
   ProjectionType,
   QueryOptions,
   UpdateQuery,
+  UpdateWriteOpResult,
 } from 'mongoose';
 
 export abstract class BaseRepository<T extends BaseEntity>
@@ -85,6 +86,19 @@ export abstract class BaseRepository<T extends BaseEntity>
       .lean()
       .exec()) as T;
     return item;
+  }
+
+  async updateMany(
+    filter?: FilterQuery<T>,
+    update?: UpdateQuery<T>,
+    options?: QueryOptions<T>,
+  ): Promise<boolean> {
+    const result: UpdateWriteOpResult = await this.model
+      .updateMany(filter, update, options)
+      .exec();
+    console.log(result);
+
+    return result.matchedCount > 0;
   }
 
   async remove(id: string): Promise<T> {
