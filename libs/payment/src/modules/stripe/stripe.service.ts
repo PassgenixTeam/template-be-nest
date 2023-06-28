@@ -249,9 +249,7 @@ export class StripeService {
     );
 
     if (paymentIntent.status === 'requires_capture') {
-      const capture = await this.stripe.paymentIntents.capture(
-        paymentIntent.id,
-      );
+      await this.stripe.paymentIntents.capture(paymentIntent.id);
     }
 
     return paymentIntent;

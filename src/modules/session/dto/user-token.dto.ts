@@ -1,7 +1,7 @@
 export class UserTokenDto {
-  token: string;
+  token!: string;
 
-  userId: string;
+  userId!: string;
 
-  cacheId: string;
+  cacheId!: string;
 }

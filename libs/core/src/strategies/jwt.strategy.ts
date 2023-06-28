@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  authenticate(req, options) {
+  authenticate(req: any, options: any) {
     if (req.handshake) {
       req.headers = req.headers || {};
       req.headers.authorization = `Bearer ${req.handshake?.query?.token}`;
@@ -32,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const user = await this.sessionService.validateSession({
         userId: uid,
         cacheId,
-        token: accessToken,
+        token: accessToken!,
       });
 
       if (!user) {

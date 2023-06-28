@@ -11,8 +11,8 @@ import {
 export class SessionRepository extends BaseRepository<Session> {
   constructor(
     @InjectModel(Session.name)
-    private sessionModel: Model<SessionDocument>,
+    sessionModel: Model<SessionDocument>,
   ) {
-    super(sessionModel);
+    super(sessionModel as any as Model<Session>);
   }
 }

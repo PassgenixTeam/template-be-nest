@@ -84,7 +84,7 @@ export class PaypalService {
     return data;
   }
 
-  async createPayout(input: CreatePayoutDto) {
+  async createPayout(_input: CreatePayoutDto) {
     const accessToken = await this.getAccessToken();
     const requestBody = {
       sender_batch_header: {

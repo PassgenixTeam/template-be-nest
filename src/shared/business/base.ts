@@ -1,5 +1,7 @@
-export class IBase {
-  _id?: string;
+export interface IBase {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
   createdBy?: string | Record<string, any>;
   updatedBy?: string;
   deletedAt?: Date;

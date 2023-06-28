@@ -1,9 +1,7 @@
 import { ROLE } from '@app/common';
-import { IBase } from 'src/shared/bussiness/base';
-import { ISession } from 'src/shared/bussiness/session';
+import { IBase } from 'src/shared/business/base';
 
 export const USER_COLLECTION = 'user';
-
 export interface IUser extends IBase {
   password: string;
   email: string;
@@ -12,6 +10,4 @@ export interface IUser extends IBase {
   avatarUrl: string;
   isActive: boolean;
   role: ROLE;
-  loginSession: ISession;
-  cacheId: string;
 }

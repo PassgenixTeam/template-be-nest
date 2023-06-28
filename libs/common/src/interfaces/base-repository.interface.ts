@@ -30,9 +30,9 @@ export interface BaseRepositoryInterface<T> {
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T>,
     options?: QueryOptions<T>,
-  ): Promise<T>;
+  ): Promise<T | null>;
 
-  findOneById(id: string): Promise<T>;
+  findOneById(id: string): Promise<T | null>;
 
   updateById(
     id?: any,

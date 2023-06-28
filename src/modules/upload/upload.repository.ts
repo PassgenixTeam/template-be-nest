@@ -9,9 +9,7 @@ import {
 
 @Injectable()
 export class UploadRepository extends BaseRepository<Upload> {
-  constructor(
-    @InjectModel(Upload.name) private uploadModel: Model<UploadDocument>,
-  ) {
-    super(uploadModel);
+  constructor(@InjectModel(Upload.name) uploadModel: Model<UploadDocument>) {
+    super(uploadModel as any as Model<Upload>);
   }
 }

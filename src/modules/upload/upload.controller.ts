@@ -39,7 +39,7 @@ export class UploadController {
 
   @ApiOperation({ summary: 'Upload files' })
   @Auth()
-  @UseInterceptors(FilesInterceptor('files', null, multerMemoryOption))
+  @UseInterceptors(FilesInterceptor('files', undefined, multerMemoryOption))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -61,7 +61,7 @@ export class UploadController {
   @Post()
   upload(
     @UploadedFiles() files: Express.Multer.File[],
-    @AuthUser('_id') userId: string,
+    @AuthUser('_id') _userId: string,
   ) {
     return this.uploadService.create(files);
   }

@@ -37,7 +37,7 @@ export class SnakeNamingStrategy
     firstTableName: string,
     secondTableName: string,
     firstPropertyName: string,
-    secondPropertyName: string,
+    _secondPropertyName: string,
   ): string {
     return snakeCase(
       firstTableName +

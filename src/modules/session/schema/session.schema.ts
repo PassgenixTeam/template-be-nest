@@ -3,8 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/modules/user/schema/user.schema';
-import { ISession } from 'src/shared/bussiness/session';
-import { USER_COLLECTION } from 'src/shared/bussiness/user';
+import { ISession } from 'src/shared/business/session';
 
 export type SessionDocument = HydratedDocument<Session>;
 
@@ -16,19 +15,19 @@ export type SessionDocument = HydratedDocument<Session>;
 export class Session extends BaseEntity implements ISession {
   @Prop({ type: String })
   @Expose()
-  accessToken: string;
+  accessToken!: string;
 
   @Prop({ type: String })
   @Expose()
-  refreshToken: string;
+  refreshToken!: string;
 
   @Prop({ type: Date })
   @Expose()
-  expiredAt: Date;
+  expiredAt?: Date;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   @Expose()
-  idUser: string;
+  idUser!: string;
 
   @Expose()
   user?: User;

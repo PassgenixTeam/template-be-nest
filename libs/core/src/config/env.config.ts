@@ -33,8 +33,10 @@ const appConfig = {
   },
   jwt: {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY || 'abcxyz',
-    JWT_EXPIRES_IN: +process.env.JWT_EXPIRES_IN || 8640000000,
-    JWT_REFRESH_EXPIRES_IN: +process.env.JWT_REFRESH_EXPIRES_IN || 8640000000,
+    JWT_EXPIRES_IN: parseInt(process.env.JWT_EXPIRES_IN || '8640000000', 10),
+    JWT_REFRESH_EXPIRES_IN: parseInt(
+      process.env.JWT_REFRESH_EXPIRES_IN || '8640000000',
+    ),
   },
   payment: {
     stripe: {
