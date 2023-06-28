@@ -2,20 +2,21 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { SessionEntity } from '../../session/entities/session.entity';
 import { BaseEntity, ROLE } from '@app/common';
 import { Expose } from 'class-transformer';
+import { IUser } from 'src/shared/business/user';
 
 @Entity({ name: 'users' })
-export class UserEntity extends BaseEntity {
+export class UserEntity extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 500 })
-  password: string;
+  password!: string;
 
   @Column({ type: 'varchar', unique: true })
-  email: string;
+  email!: string;
 
   @Column({ type: 'varchar', length: 100 })
-  firstName: string;
+  firstName!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  lastName: string;
+  lastName!: string;
 
   @Column({
     type: 'varchar',
@@ -24,20 +25,20 @@ export class UserEntity extends BaseEntity {
       // eslint-disable-next-line max-len
       'https://media.istockphoto.com/id/1016744004/vector/profile-placeholder-image-gray-silhouette-no-photo.jpg?s=612x612&w=0&k=20&c=mB6A9idhtEtsFXphs1WVwW_iPBt37S2kJp6VpPhFeoA=',
   })
-  avatarUrl: string;
+  avatarUrl!: string;
 
   @Column({ type: 'boolean', default: false })
-  isActive: boolean;
+  isActive!: boolean;
 
   @OneToMany(() => SessionEntity, (session) => session.user)
-  sessions: SessionEntity[];
+  sessions!: SessionEntity[];
 
   @Column({ type: 'enum', enum: ROLE, default: ROLE.FREELANCE })
-  role: ROLE;
+  role!: ROLE;
 
   @Expose()
-  loginSession: SessionEntity;
+  loginSession?: SessionEntity;
 
   @Expose()
-  cacheId: string;
+  cacheId?: string;
 }

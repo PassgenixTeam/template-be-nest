@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateSessionDto } from './dto/create-session.dto';
-import { UserTokenDto } from './dto/user-token.dto';
-import { REDIS_PROVIDER, appConfig } from '@app/core';
-import { UserEntity } from '../user/entities/user.entity';
-import { SessionEntity } from './entities/session.entity';
+import { appConfig } from '@app/core';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository, UpdateResult } from 'typeorm';
 import { RedisService } from '../../../libs/core/src/cache/redis.service';
+import { UserEntity } from '../user/entities/user.entity';
+import { CreateSessionDto } from './dto/create-session.dto';
+import { UserTokenDto } from './dto/user-token.dto';
+import { SessionEntity } from './entities/session.entity';
 
 @Injectable()
 export class SessionService {
@@ -53,7 +53,7 @@ export class SessionService {
     });
 
     if (session) {
-      const user = session.user;
+      const user: Partial<UserEntity> = session.user!;
 
       delete user.password;
       delete session.user;
@@ -71,23 +71,21 @@ export class SessionService {
 
       return data as UserEntity;
     }
+
+    return null;
   }
 
   async findToken(id: string, token: string): Promise<SessionEntity> {
-    return this.sessionEntity.findOne({
+    return this.sessionEntity.findOneOrFail({
       where: { user: { id }, refreshToken: token, expiredAt: IsNull() },
     });
   }
 
   async invalidAllSessionByUserId(userId: string): Promise<boolean> {
-    return (
-      (
-        await this.sessionEntity.update(
-          { user: { id: userId }, expiredAt: IsNull() },
-          { expiredAt: new Date() },
-        )
-      ).affected > 0
-    );
+    return !!(await this.sessionEntity.update(
+      { user: { id: userId }, expiredAt: IsNull() },
+      { expiredAt: new Date() },
+    ));
   }
 
   async invalidSession(id: string): Promise<UpdateResult> {

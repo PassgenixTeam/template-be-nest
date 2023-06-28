@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { S3UploadService } from '../../../libs/upload/src';
-import { FILE_STATUS } from './enum/upload.enum';
 import { UploadEntity } from './entities/upload.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterFileDto } from './dto/requests/filter-file.dto';
 import { FilesDto } from 'src/modules/upload/dto/responses/files.response.dto';
 import { ResponseTransform } from '@app/common';
-import { instanceToPlain } from 'class-transformer';
+import { FILE_STATUS } from 'src/shared/business/upload';
 
 @Injectable()
 export class UploadService {

@@ -24,10 +24,10 @@ export class AllExceptionsFilter
     let { errorCode, message } = this.messageCode(exception);
 
     // temporary treatment
-    if (exception?.getResponse?.()['message']) {
-      errorCode = exception.getResponse()['statusCode'];
-      message = exception.getResponse()['message'];
-    }
+    // if (exception?.getResponse?.()['message']) {
+    //   errorCode = exception.getResponse()['statusCode'];
+    //   message = exception.getResponse()['message'];
+    // }
     //
 
     response.status(status).json({

@@ -1,3 +1,4 @@
+import { LoggerMiddleware } from '@app/common';
 import {
   Global,
   MiddlewareConsumer,
@@ -6,22 +7,18 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
+import { appConfig } from './config';
+import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from './guards/roles/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { LoggerMiddleware } from '@app/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmAsyncConfig } from './config/typeorm.config';
-import { appConfig } from './config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-import { MongooseModule } from '@nestjs/mongoose';
-// import { RedisService } from './cache';
-import { SessionService } from '../../../src/modules/session/session.service';
-import { SessionEntity } from '../../../src/modules/session/entities/session.entity';
-import { RedisService } from './cache/redis.service';
-import { CacheModule } from './cache/cache.module';
 import { PassportModule } from '@nestjs/passport';
+import { SessionEntity } from '../../../src/modules/session/entities/session.entity';
+import { SessionService } from '../../../src/modules/session/session.service';
+import { CacheModule } from './cache/cache.module';
 
 @Global()
 @Module({
@@ -32,7 +29,6 @@ import { PassportModule } from '@nestjs/passport';
     TypeOrmModule.forFeature([SessionEntity]),
     //
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
-    MongooseModule.forRoot(appConfig.database.MONGO_DB.DB_URI),
     //
     PassportModule,
     JwtModule.registerAsync({

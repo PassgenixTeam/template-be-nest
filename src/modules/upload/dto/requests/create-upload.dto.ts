@@ -4,17 +4,17 @@ import { IsOptional } from 'class-validator';
 export class UploadDto {
   @ApiProperty({ type: 'string' })
   @IsOptional()
-  type: string;
+  type!: string;
 
   @ApiProperty({ type: 'string' })
   @IsOptional()
-  size: number;
+  size!: number;
 
   @ApiProperty({ type: 'string' })
   @IsOptional()
-  url: string;
+  url!: string;
 
   @ApiProperty({ type: 'string' })
   @IsOptional()
-  key: string;
+  key!: string;
 }

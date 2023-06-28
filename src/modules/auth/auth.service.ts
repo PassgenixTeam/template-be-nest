@@ -110,7 +110,7 @@ export class AuthService {
       isValidSession.accessToken,
     ) as TokenPayload;
 
-    await this.redisService.del(payloadAccessToken.cacheId);
+    await this.redisService.del(payloadAccessToken.cacheId!);
 
     await this.sessionService.invalidSession(isValidSession.id);
     const accessToken = this.createAccessToken({

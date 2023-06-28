@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+// @ts-nocheck
+// @ts-ignore
 import { ERROR } from '@app/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -24,7 +25,7 @@ export class UserService {
     throw new Error(ERROR.CanNotCreateUser.toString());
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: number, _updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 

@@ -1,25 +1,27 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { IBaseResponseDto } from 'src/shared/dto/base-response.dto';
+import { IResponseDto } from 'src/shared/dto/response.dto';
 
-export class BaseResponseDto {
+export class BaseResponseDto implements IBaseResponseDto {
   @Expose()
   @ApiResponseProperty({ type: 'string', format: 'uuid' })
-  id: string;
+  id!: string;
 
   @Expose()
   @ApiResponseProperty({
     example: new Date().getTime(),
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @Expose()
   @ApiResponseProperty({
     example: new Date().getTime(),
   })
-  updatedAt: Date;
+  updatedAt!: Date;
 }
 
-export class ResponseDto {
+export class ResponseDto implements IResponseDto {
   @ApiResponseProperty({
     example: '',
   })

@@ -11,12 +11,14 @@ import { isArray, isJSON, isObject } from 'class-validator';
  */
 export const ObjectTransformToString = (option?: TransformOptions) =>
   Transform(
-    ({ value }) => {
+    ({ value }: { value: any }) => {
       if (
         typeof value === 'object' &&
         (isJSON(value) || isArray(value) || isObject(value))
       )
         return JSON.stringify(value);
+
+      return value;
     },
     {
       toClassOnly: true,

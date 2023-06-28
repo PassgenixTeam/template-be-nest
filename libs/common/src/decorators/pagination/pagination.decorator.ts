@@ -4,7 +4,7 @@ import { PaginationOptions } from './pagination.model';
 import { SORT_ORDER } from '@app/common/enums';
 
 export const Pagination = createParamDecorator(
-  (data: unknown, context: ExecutionContext): PaginationOptions => {
+  (_data: unknown, context: ExecutionContext): PaginationOptions => {
     const request = context.switchToHttp().getRequest();
     // Whatever logic you want to parse params in request
     const page = parseInt(request.query.page, 10) || 1;
@@ -21,28 +21,33 @@ export const Pagination = createParamDecorator(
     };
   },
   [
-    (target: any, key: string) => {
+    (target: Object, propertyKey?: string | symbol) => {
+      const propertyDescriptor: PropertyDescriptor | undefined =
+        Object.getOwnPropertyDescriptor(target, propertyKey!);
+
+      if (!propertyDescriptor || !propertyKey) return;
+
       ApiQuery({
         name: 'page',
         schema: { default: 1, type: 'number', minimum: 1 },
         required: false,
-      })(target, key, Object.getOwnPropertyDescriptor(target, key));
+      })(target, propertyKey, propertyDescriptor);
       ApiQuery({
         name: 'limit',
         schema: { default: 20, type: 'number', minimum: 1 },
         required: false,
-      })(target, key, Object.getOwnPropertyDescriptor(target, key));
+      })(target, propertyKey, propertyDescriptor);
       ApiQuery({
         name: 'sortKey',
         schema: { type: 'string' },
         required: false,
-      })(target, key, Object.getOwnPropertyDescriptor(target, key));
+      })(target, propertyKey, propertyDescriptor);
       ApiQuery({
         name: 'sortOrder',
         schema: { type: 'string' },
         enum: SORT_ORDER,
         required: false,
-      })(target, key, Object.getOwnPropertyDescriptor(target, key));
+      })(target, propertyKey, propertyDescriptor);
     },
   ],
 );

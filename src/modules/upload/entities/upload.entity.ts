@@ -1,21 +1,21 @@
 import { Column, Entity } from 'typeorm';
-import { FILE_STATUS } from '../enum/upload.enum';
 import { BaseEntity } from '@app/common';
+import { FILE_STATUS, IUpload } from 'src/shared/business/upload';
 
 @Entity({ name: 'uploads' })
-export class UploadEntity extends BaseEntity {
+export class UploadEntity extends BaseEntity implements IUpload {
   @Column({ type: 'varchar', length: 50 })
-  type: string;
+  type!: string;
 
   @Column({ type: 'float' })
-  size: number;
+  size!: number;
 
   @Column({ type: 'varchar', length: 255 })
-  url: string;
+  url!: string;
 
   @Column({ type: 'varchar', length: 100 })
-  key: string;
+  key!: string;
 
   @Column({ type: 'enum', enum: FILE_STATUS })
-  status: FILE_STATUS;
+  status!: FILE_STATUS;
 }

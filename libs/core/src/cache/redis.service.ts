@@ -1,37 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { appConfig } from '../config';
 import { Redis } from 'ioredis';
 import { RedisConfig } from './redis.interface';
 
 export class RedisService {
-  private redis: Redis;
-
-  // static init() {
-  //   const {
-  //     REDIS_HOST: host,
-  //     REDIS_PORT: port,
-  //     REDIS_PASSWORD: password,
-  //   } = appConfig.redis;
-  //   const redis = new Redis({
-  //     host,
-  //     port: +port,
-  //     password,
-  //   });
-
-  //   redis.on('connect', () => {
-  //     console.log('Redis connected');
-  //   });
-
-  //   redis.on('error', (error) => {
-  //     console.log('Redis error', error);
-  //   });
-
-  //   redis.on('close', () => {
-  //     console.log('Redis connection closed');
-  //   });
-
-  //   this.redis = redis;
-  // }
+  private redis: Redis | null = null;
 
   constructor(config: RedisConfig) {
     if (config) {
@@ -57,19 +28,19 @@ export class RedisService {
   }
 
   async get(key: string) {
-    return this.redis.get(key);
+    return this.redis!.get(key);
   }
 
   async set(key: string, value: string, expire?: number) {
-    await this.redis.set(key, value);
+    await this.redis!.set(key, value);
     if (expire) {
-      await this.redis.expire(key, expire);
+      await this.redis!.expire(key, expire);
     }
 
     return true;
   }
 
   async del(key: string) {
-    return this.redis.del(key);
+    return this.redis!.del(key);
   }
 }
