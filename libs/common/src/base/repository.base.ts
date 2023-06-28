@@ -48,7 +48,7 @@ export abstract class BaseRepository<T extends BaseEntity>
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T>,
     options?: QueryOptions<T>,
-  ): Promise<T> {
+  ): Promise<T | null> {
     const item = (await this.model
       .findOne(filter, projection, options)
       .lean()
@@ -57,7 +57,7 @@ export abstract class BaseRepository<T extends BaseEntity>
     return item?.deletedAt ? null : item;
   }
 
-  async findOneById(id: string): Promise<T> {
+  async findOneById(id: string): Promise<T | null> {
     const item = (await this.model.findById(id).lean().exec()) as T;
     return item?.deletedAt ? null : item;
   }

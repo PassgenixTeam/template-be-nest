@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { PaypalService } from './paypal.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CaptureOrderDto } from './dto/capture-order.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
 import { CreatePayoutDto } from './dto/create-payout.dto';
+import { PaypalService } from './paypal.service';
 
 @ApiTags('paypal')
 @Controller('paypal')

@@ -1,8 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
-import mongoose from 'mongoose';
-import { IBase } from 'src/shared/bussiness/base';
-import { USER_COLLECTION } from 'src/shared/bussiness/user';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { IBase } from 'src/shared/business/base';
+import { USER_COLLECTION } from 'src/shared/business/user';
+
+export type BaseDocument = HydratedDocument<BaseEntity>;
 
 @Schema({ timestamps: true, versionKey: false })
 export class BaseEntity implements IBase {

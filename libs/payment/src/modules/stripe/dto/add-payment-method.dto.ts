@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AddPaymentMethodDto {
   @ApiProperty({ type: String })
-  paymentMethodId: string;
+  paymentMethodId!: string;
 
   @ApiProperty({ type: String })
-  customerId: string;
+  customerId!: string;
 }

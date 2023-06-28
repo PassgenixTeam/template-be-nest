@@ -1,7 +1,6 @@
-import { Module, DynamicModule, Provider, OnModuleInit } from '@nestjs/common';
-import { REDIS_PROVIDER } from './redis.constant';
-import { RedisService } from './redis.service';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { appConfig } from '../config';
+import { RedisService } from './redis.service';
 
 @Module({})
 export class CacheModule {

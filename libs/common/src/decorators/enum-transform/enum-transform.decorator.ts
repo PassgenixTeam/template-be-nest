@@ -2,7 +2,11 @@ import { Transform, TransformationType } from 'class-transformer';
 import { $enum } from 'ts-enum-util';
 import * as _ from 'lodash';
 
-const getEnumValue = (transformationType, value, entity) => {
+const getEnumValue = (
+  transformationType: TransformationType,
+  value: string,
+  entity: any,
+) => {
   let newValue;
   switch (transformationType) {
     case TransformationType.CLASS_TO_PLAIN:

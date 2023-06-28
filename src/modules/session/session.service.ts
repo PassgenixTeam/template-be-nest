@@ -19,8 +19,8 @@ export class SessionService {
     return this.sessionRepository.create({
       accessToken,
       refreshToken,
-      idUser: user._id,
-      expiredAt: null,
+      idUser: user._id!,
+      expiredAt: undefined,
     });
   }
 
@@ -44,7 +44,7 @@ export class SessionService {
         expiredAt: null,
         accessToken: token,
       },
-      null,
+      undefined,
       {
         populate: {
           path: 'user',
@@ -53,7 +53,7 @@ export class SessionService {
     );
 
     if (session) {
-      const user = session.user;
+      const user: Partial<User> = session.user!;
 
       delete user.password;
       delete session.user;
@@ -71,9 +71,11 @@ export class SessionService {
 
       return data as User;
     }
+
+    return null;
   }
 
-  async findToken(id: string, token: string): Promise<Session> {
+  async findToken(id: string, token: string): Promise<Session | null> {
     return this.sessionRepository.findOne({
       idUser: id,
       refreshToken: token,

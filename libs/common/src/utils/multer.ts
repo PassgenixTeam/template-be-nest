@@ -1,11 +1,20 @@
-import { FileFilterCallback, diskStorage, memoryStorage } from 'multer';
+import { Request } from 'express';
+import { diskStorage, memoryStorage } from 'multer';
 
 const storageDisk = diskStorage({
-  destination: function (req, file, cb) {
+  destination: function (
+    _req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, destination: string) => void,
+  ) {
     if (file.fieldname === 'files') return cb(null, './public/thumbs');
     return cb(null, './public/results');
   },
-  filename: function (req, file, cb) {
+  filename: function (
+    _req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, filename: string) => void,
+  ) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + '.' + file.originalname.split('.').pop());
   },
@@ -14,18 +23,24 @@ const storageDisk = diskStorage({
 const storageMemory = memoryStorage();
 
 const fileFilter = (
-  request,
+  _req: Request,
   file: Express.Multer.File,
-  callback: FileFilterCallback,
+  cb: (error: Error | null, acceptFile: boolean) => void,
 ): void => {
   if (
     file.mimetype === 'image/png' ||
     file.mimetype === 'image/jpg' ||
-    file.mimetype === 'image/jpeg'
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'video/mp4'
   ) {
-    callback(null, true);
+    cb(null, true);
   } else {
-    callback(null, false);
+    cb(
+      new Error(
+        'File format is not supported. Only upload .png, .jpg, .jpeg, .mp4 file format. Please try again!',
+      ),
+      false,
+    );
   }
 };
 

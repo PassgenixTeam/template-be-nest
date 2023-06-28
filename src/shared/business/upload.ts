@@ -1,6 +1,6 @@
-import { IBase } from 'src/shared/bussiness/base';
+import { IBase } from 'src/shared/business/base';
 
-export const UPLOAD_COLLECTION = 'uploads';
+export const UPLOAD_COLLECTION = 'upload';
 
 export enum FILE_STATUS {
   PENDING = 'pending',

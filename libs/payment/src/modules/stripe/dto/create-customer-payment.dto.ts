@@ -2,32 +2,32 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCustomerPaymentDto {
   @ApiProperty({ type: String })
-  email: string;
+  email!: string;
 
   @ApiProperty({ type: String })
-  source: string;
+  source!: string;
 
   @ApiProperty({ type: String })
-  name: string;
+  name!: string;
 
   @ApiProperty({ type: String })
-  phone: string;
+  phone!: string;
 
   @ApiProperty({ type: String })
-  address: string;
+  address!: string;
 
   @ApiProperty({ type: String })
-  city: string;
+  city!: string;
 
   @ApiProperty({ type: String })
-  state: string;
+  state!: string;
 
   @ApiProperty({ type: String })
-  country: string;
+  country!: string;
 
   @ApiProperty({ type: String })
-  line1: string;
+  line1!: string;
 
   @ApiProperty({ type: String })
-  line2: string;
+  line2!: string;
 }
