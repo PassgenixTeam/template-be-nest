@@ -4,8 +4,9 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
-import { ERROR } from '../enums/error.enum';
 import { ErrorCustom } from '@app/common/base';
+import { IResponse } from '@app/common/interfaces';
+import { ERROR_MESSAGES } from 'src/shared/constants/errors';
 
 @Catch()
 export class AllExceptionsFilter
@@ -13,7 +14,7 @@ export class AllExceptionsFilter
   implements ExceptionFilter
 {
   constructor() {
-    super(ERROR);
+    super(ERROR_MESSAGES);
   }
 
   catch(exception: HttpException, host: ArgumentsHost): void {
@@ -23,18 +24,13 @@ export class AllExceptionsFilter
 
     let { errorCode, message } = this.messageCode(exception);
 
-    // temporary treatment
-    // if (exception?.getResponse?.()['message']) {
-    //   errorCode = exception.getResponse()['statusCode'];
-    //   message = exception.getResponse()['message'];
-    // }
-    //
-
-    response.status(status).json({
+    const res: IResponse<any> = {
       statusCode: status,
       message,
       errorCode,
       currentTime: new Date().getTime(),
-    });
+    };
+
+    response.status(status).json(res);
   }
 }

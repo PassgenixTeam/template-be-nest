@@ -1,10 +1,15 @@
-export interface Response<T> {
-  data: T;
+import { IValidatorError } from '@app/common/interfaces/validator.interface';
+
+export interface IResponse<T> {
+  data?: T;
   statusCode: number;
-  message: string;
+  message: string | string[] | IValidatorError[];
+  error?: string;
+  errorCode?: number | string;
+  currentTime?: number;
 }
 
-export interface ResPagination<T> {
+export interface IResPagination<T> {
   metadata: T[];
   meta: {
     page: number;
