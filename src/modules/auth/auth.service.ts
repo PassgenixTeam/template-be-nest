@@ -9,6 +9,8 @@ import { v4 as uuidV4 } from 'uuid';
 import { UserRepository } from 'src/modules/user/user.repository';
 import { User } from 'src/modules/user/schema/user.schema';
 import { plainToInstance } from 'class-transformer';
+import { ERROR_MESSAGES } from 'src/shared/constants/errors';
+import { CustomBadRequestException } from '@app/common/exception/custom-bad-request.exception';
 
 @Injectable()
 export class AuthService {
@@ -27,11 +29,15 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error('Email is not exists');
+      throw new CustomBadRequestException(
+        ERROR_MESSAGES.EmailOrPasswordIncorrect,
+      );
     }
 
     if (user.password !== sha512(password)) {
-      throw new Error('Password is not correct');
+      throw new CustomBadRequestException(
+        ERROR_MESSAGES.EmailOrPasswordIncorrect,
+      );
     }
 
     const accessToken = this.createAccessToken(user);
@@ -67,8 +73,9 @@ export class AuthService {
     const isExistsEmail = await this.userRepository.findOne({
       where: { email },
     });
+
     if (isExistsEmail) {
-      throw new Error('Email is already exist');
+      throw new CustomBadRequestException(ERROR_MESSAGES.EmailAlreadyExists);
     }
 
     return this.userRepository.create(

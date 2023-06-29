@@ -7,21 +7,25 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Response } from '../interfaces/response.interface';
+import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class TransformInterceptor<T>
-  implements NestInterceptor<T, Response<T>>
+  implements NestInterceptor<T, IResponse<T>>
 {
   private readonly logger = new Logger(TransformInterceptor.name);
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<IResponse<T>> {
     return next.handle().pipe(
       map((data) => {
         return {
           statusCode: context.switchToHttp().getResponse().statusCode,
           data,
           currentTimestamp: new Date().getTime(),
+          message: 'Success',
         };
       }),
       catchError((err) => {

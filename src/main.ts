@@ -1,23 +1,30 @@
-import { AllExceptionsFilter, TransformInterceptor } from '@app/common';
+import {
+  AllExceptionsFilter,
+  ClassValidatorFilter,
+  TransformInterceptor,
+} from '@app/common';
+import { CustomValidationPipe } from '@app/common/pipes/validation.pipe';
 import { appConfig } from '@app/core';
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
 import mongoose from 'mongoose';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     rawBody: true,
   });
 
+  const reflector = app.get(Reflector);
+
   app.enableCors();
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-
   app.useGlobalInterceptors(new TransformInterceptor());
-
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(
+    new AllExceptionsFilter(),
+    new ClassValidatorFilter(reflector),
+  );
+  app.useGlobalPipes(new CustomValidationPipe());
 
   const options = new DocumentBuilder()
     .setTitle(appConfig.swagger.SWAGGER_TITLE)
