@@ -61,17 +61,9 @@ export class AuthService {
 
   async register(input: RegisterDto) {
     const { email, password, firstName, lastName } = input;
-    console.log(
-      plainToInstance(User, {
-        email,
-        password: sha512(password),
-        firstName,
-        lastName,
-        isActive: false,
-      }),
-    );
+
     const isExistsEmail = await this.userRepository.findOne({
-      where: { email },
+      email,
     });
 
     if (isExistsEmail) {
