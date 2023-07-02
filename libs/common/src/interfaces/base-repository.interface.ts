@@ -46,6 +46,12 @@ export interface BaseRepositoryInterface<T> {
     options?: QueryOptions<T>,
   ): Promise<T>;
 
+  updateMany(
+    filter?: FilterQuery<T>,
+    update?: UpdateQuery<T>,
+    options?: QueryOptions<T>,
+  ): Promise<boolean>;
+
   remove(id: string): Promise<T>;
 
   removeMany(

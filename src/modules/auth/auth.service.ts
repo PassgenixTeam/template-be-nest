@@ -119,7 +119,9 @@ export class AuthService {
       isValidSession.accessToken,
     ) as TokenPayload;
 
-    await this.redisService.del(payloadAccessToken.cacheId!);
+    await this.redisService.del(
+      `${isValidSession.idUser}.${payloadAccessToken.cacheId!}`,
+    );
 
     await this.sessionService.invalidSession(isValidSession._id!);
     const accessToken = this.createAccessToken({
@@ -147,8 +149,25 @@ export class AuthService {
     };
   }
 
-  logout() {
+  async logout(user: User) {
     // TODO: implement logout
+    await Promise.all([
+      this.redisService.del(`${user._id}.${user.cacheId!}`),
+      this.sessionService.invalidSession(user.loginSession!._id!),
+    ]);
+
+    return true;
+  }
+
+  async logoutAll(user: User) {
+    // TODO: implement logoutAll
+
+    await Promise.all([
+      this.redisService.delAll(`${user._id!}.*`),
+      this.sessionService.invalidAllSessionByUserId(user._id!),
+    ]);
+
+    return true;
   }
 
   private isTokenExpired(token: any): boolean {
