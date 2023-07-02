@@ -145,8 +145,25 @@ export class AuthService {
     };
   }
 
-  logout() {
+  async logout(user: UserEntity) {
     // TODO: implement logout
+    await Promise.all([
+      this.redisService.del(`${user.id}.${user.cacheId!}`),
+      this.sessionService.invalidSession(user.loginSession!.id),
+    ]);
+
+    return true;
+  }
+
+  async logoutAll(user: UserEntity) {
+    // TODO: implement logoutAll
+
+    await Promise.all([
+      this.redisService.delAll(`${user.id}.*`),
+      this.sessionService.invalidAllSessionByUserId(user.id),
+    ]);
+
+    return true;
   }
 
   private isTokenExpired(token: any): boolean {
