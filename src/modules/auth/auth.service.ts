@@ -149,22 +149,22 @@ export class AuthService {
     };
   }
 
-  async logout(user: UserEntity) {
+  async logout(user: User) {
     // TODO: implement logout
     await Promise.all([
-      this.redisService.del(`${user.id}.${user.cacheId!}`),
-      this.sessionService.invalidSession(user.loginSession!.id),
+      this.redisService.del(`${user._id}.${user.cacheId!}`),
+      this.sessionService.invalidSession(user.loginSession!._id!),
     ]);
 
     return true;
   }
 
-  async logoutAll(user: UserEntity) {
+  async logoutAll(user: User) {
     // TODO: implement logoutAll
 
     await Promise.all([
-      this.redisService.delAll(`${user.id}.*`),
-      this.sessionService.invalidAllSessionByUserId(user.id),
+      this.redisService.delAll(`${user._id!}.*`),
+      this.sessionService.invalidAllSessionByUserId(user._id!),
     ]);
 
     return true;

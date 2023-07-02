@@ -96,7 +96,6 @@ export abstract class BaseRepository<T extends BaseEntity>
     const result: UpdateWriteOpResult = await this.model
       .updateMany(filter, update, options)
       .exec();
-    console.log(result);
 
     return result.matchedCount > 0;
   }
