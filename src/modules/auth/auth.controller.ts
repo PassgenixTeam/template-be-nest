@@ -3,6 +3,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Auth, AuthUser } from '@app/core';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,7 +35,14 @@ export class AuthController {
   }
 
   @Get('logout')
-  logout() {
-    return this.authService.logout();
+  @Auth()
+  logout(@AuthUser() user: UserEntity) {
+    return this.authService.logout(user);
+  }
+
+  @Get('logout-all')
+  @Auth()
+  logoutAll(@AuthUser() user: UserEntity) {
+    return this.authService.logoutAll(user);
   }
 }

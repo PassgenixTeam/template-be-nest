@@ -29,7 +29,9 @@ export class SessionService {
 
   async validateSession(payload: UserTokenDto) {
     const { userId, cacheId, token } = payload;
-    const cacheSessionJson = await this.redisService.get(cacheId);
+    const cacheSessionJson = await this.redisService.get(
+      `${userId}.${cacheId}`,
+    );
 
     if (cacheSessionJson) {
       const cacheSession: UserEntity = JSON.parse(cacheSessionJson);
@@ -64,7 +66,7 @@ export class SessionService {
       };
 
       await this.redisService.set(
-        cacheId,
+        `${user.id}.${cacheId}`,
         JSON.stringify(data),
         appConfig.jwt.JWT_EXPIRES_IN ?? undefined,
       );
@@ -82,10 +84,12 @@ export class SessionService {
   }
 
   async invalidAllSessionByUserId(userId: string): Promise<boolean> {
-    return !!(await this.sessionEntity.update(
-      { user: { id: userId }, expiredAt: IsNull() },
-      { expiredAt: new Date() },
-    ));
+    return !!(await this.sessionEntity
+      .createQueryBuilder()
+      .update(SessionEntity)
+      .set({ expiredAt: new Date() })
+      .where('user_id = :userId', { userId })
+      .execute());
   }
 
   async invalidSession(id: string): Promise<UpdateResult> {
