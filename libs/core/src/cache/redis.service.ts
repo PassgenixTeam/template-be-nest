@@ -40,7 +40,30 @@ export class RedisService {
     return true;
   }
 
+  async setAllKey(key: string, value: string, expire?: number) {
+    const keys = await this.redis!.keys(key);
+    if (keys.length) {
+      keys.forEach(async (key) => {
+        await this.redis!.set(key, value);
+        if (expire) {
+          await this.redis!.expire(key, expire);
+        }
+      });
+    }
+
+    return true;
+  }
+
   async del(key: string) {
     return this.redis!.del(key);
+  }
+
+  async delAll(key: string) {
+    const keys = await this.redis!.keys(key);
+    if (keys.length) {
+      await this.redis!.del(...keys);
+    }
+
+    return true;
   }
 }
