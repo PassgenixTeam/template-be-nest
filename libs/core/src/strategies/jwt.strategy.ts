@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { appConfig } from '../config';
 import { SessionService } from '../../../../src/modules/session/session.service';
 import { Request } from 'express';
@@ -14,7 +14,12 @@ const jwtFromRequest = (req: any) => {
   }
 
   const token = req.handshake.headers.authorization?.replace('Bearer ', '');
+
   return token;
+};
+
+const isSocket = (req: any) => {
+  return !!req.handshake?.headers?.authorization;
 };
 
 @Injectable()
@@ -48,11 +53,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       });
 
       if (!user) {
-        new CustomWsExceptionFilter('Unauthorized');
+        if (isSocket(req)) throw new CustomWsExceptionFilter('Unauthorized');
+        throw new UnauthorizedException();
       }
       return { ...user, cacheId };
     } catch (error) {
-      throw new CustomWsExceptionFilter('Unauthorized');
+      console.log(error);
+      if (isSocket(req)) throw new CustomWsExceptionFilter('Unauthorized');
+      throw new UnauthorizedException();
     }
   }
 }
