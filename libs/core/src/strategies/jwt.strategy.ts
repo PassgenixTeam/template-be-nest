@@ -1,15 +1,27 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { appConfig } from '../config';
 import { SessionService } from '../../../../src/modules/session/session.service';
 import { Request } from 'express';
+import { CustomWsExceptionFilter } from '@app/common/exception/custom-ws.exception';
+
+const jwtFromRequest = (req: any) => {
+  const bearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+
+  if (bearerToken && bearerToken !== 'undefined') {
+    return bearerToken;
+  }
+
+  const token = req.handshake.headers.authorization?.replace('Bearer ', '');
+  return token;
+};
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly sessionService: SessionService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: jwtFromRequest,
       ignoreExpiration: false,
       secretOrKey: appConfig.jwt.JWT_SECRET_KEY,
       passReqToCallback: true,
@@ -28,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(req: Request, payload: any): Promise<any> {
     try {
       const { uid, cacheId } = payload;
-      const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+      const accessToken = jwtFromRequest(req);
       const user = await this.sessionService.validateSession({
         userId: uid,
         cacheId,
@@ -36,13 +48,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       });
 
       if (!user) {
-        throw new UnauthorizedException();
+        new CustomWsExceptionFilter('Unauthorized');
       }
       return { ...user, cacheId };
     } catch (error) {
-      console.log('error', error);
-
-      throw new UnauthorizedException();
+      throw new CustomWsExceptionFilter('Unauthorized');
     }
   }
 }
