@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { isEmpty } from 'lodash';
 import { ROLE } from '@app/common';
 import { IS_PUBLIC_KEY } from '@app/core/decorators';
+import { CustomWsExceptionFilter } from '@app/common/exception/custom-ws.exception';
 
 @Injectable()
 export class WsRolesGuard implements CanActivate {
@@ -26,7 +27,10 @@ export class WsRolesGuard implements CanActivate {
     const role = request.user?.role;
     const roleAuth = role && this.hasRole(role, roles);
     if (!roleAuth) {
-      return false;
+      throw new CustomWsExceptionFilter({
+        statusCode: 403,
+        message: 'Forbidden',
+      });
     }
     return true;
   }

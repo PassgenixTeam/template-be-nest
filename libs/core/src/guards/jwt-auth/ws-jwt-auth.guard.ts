@@ -2,6 +2,7 @@ import { ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@app/core/decorators';
+import { ISocket } from '@app/common';
 
 @Injectable()
 export class WsJwtAuthGuard extends AuthGuard('jwt') {
@@ -16,9 +17,11 @@ export class WsJwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
-    const req = context.switchToWs().getClient();
+    const req: ISocket = context.switchToWs().getClient();
 
     const bearerToken = req.handshake.headers.authorization?.trim();
+
+    req.eventName = context.switchToWs().getPattern();
 
     if (isPublic && !bearerToken) {
       return true;
