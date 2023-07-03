@@ -5,11 +5,22 @@ import { appConfig } from '../config';
 import { SessionService } from '../../../../src/modules/session/session.service';
 import { Request } from 'express';
 
+const jwtFromRequest = (req: any) => {
+  const bearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+
+  if (bearerToken && bearerToken !== 'undefined') {
+    return bearerToken;
+  }
+
+  const token = req.handshake.headers.authorization?.replace('Bearer ', '');
+  return token;
+};
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly sessionService: SessionService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: jwtFromRequest,
       ignoreExpiration: false,
       secretOrKey: appConfig.jwt.JWT_SECRET_KEY,
       passReqToCallback: true,
@@ -27,7 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(req: Request, payload: any): Promise<any> {
     const { uid, cacheId } = payload;
-    const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    const accessToken = jwtFromRequest(req);
     const user = await this.sessionService.validateSession({
       userId: uid,
       cacheId,
