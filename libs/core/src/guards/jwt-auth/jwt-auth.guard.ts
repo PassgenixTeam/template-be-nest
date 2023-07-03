@@ -1,12 +1,12 @@
-import { ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@app/core/decorators';
 
 @Injectable()
-export class WsJwtAuthGuard extends AuthGuard('jwt') {
-  @Inject(Reflector) private readonly reflector!: Reflector;
-  constructor() {
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private readonly reflector: Reflector) {
     super();
   }
 
@@ -16,9 +16,9 @@ export class WsJwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
-    const req = context.switchToWs().getClient();
+    const req: Request = context.switchToHttp().getRequest();
 
-    const bearerToken = req.handshake.headers.authorization?.trim();
+    const bearerToken = req.headers.authorization?.trim();
 
     if (isPublic && !bearerToken) {
       return true;

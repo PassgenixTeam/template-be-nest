@@ -19,7 +19,7 @@ const jwtFromRequest = (req: any) => {
 };
 
 const isSocket = (req: any) => {
-  return !!req.handshake?.headers?.authorization;
+  return !!req.handshake;
 };
 
 @Injectable()

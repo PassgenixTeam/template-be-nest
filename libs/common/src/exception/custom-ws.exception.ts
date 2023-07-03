@@ -12,7 +12,6 @@ export class CustomWsExceptionFilter extends WsException {
       super({
         statusCode: message.statusCode || 500,
         message: message.message,
-        eventMessage: message.eventMessage,
       } as IWsException);
     } else {
       super({

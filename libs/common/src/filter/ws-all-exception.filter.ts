@@ -1,15 +1,18 @@
-import { IResponse, IWsException } from '@app/common/interfaces';
-import { Catch, ArgumentsHost, Logger } from '@nestjs/common';
+import { IResponse, ISocket, IWsException } from '@app/common/interfaces';
+import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
 import { BaseWsExceptionFilter, WsException } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
 import { EVENT_SOCKET } from 'src/shared/socket/event';
 
 @Catch()
 export class WsAllExceptionsFilter extends BaseWsExceptionFilter {
+  constructor() {
+    super();
+  }
+
   private readonly logger = new Logger(WsAllExceptionsFilter.name);
+
   catch(exception: WsException, host: ArgumentsHost) {
-    const ctx = host.switchToWs();
-    const client: Socket = ctx.getClient();
+    const client: ISocket = host.switchToWs().getClient();
 
     this.logger.error(exception.message);
     console.log(exception);
@@ -21,13 +24,12 @@ export class WsAllExceptionsFilter extends BaseWsExceptionFilter {
         statusCode: 500,
         message: errorMessage.toString(),
         currentTime: new Date().getTime(),
-        eventMessage: errorMessage.toString(),
+        eventName: client.eventName,
       };
 
       if (typeof errorMessage === 'object') {
         res.statusCode = errorMessage.statusCode || 500;
         res.message = errorMessage.message;
-        res.eventMessage = errorMessage.eventMessage;
       }
 
       client.emit(EVENT_SOCKET.ERROR, res);

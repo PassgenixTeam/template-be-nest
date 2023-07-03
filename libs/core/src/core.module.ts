@@ -12,13 +12,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { appConfig } from './config';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
-import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from './guards/roles/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { SessionEntity } from '../../../src/modules/session/entities/session.entity';
 import { SessionService } from '../../../src/modules/session/session.service';
 import { CacheModule } from './cache/cache.module';
+import { JwtAuthGuard } from '@app/core/guards';
+import { WsJwtAuthGuard } from '@app/core/guards/jwt-auth/ws-jwt-auth.guard';
 
 @Global()
 @Module({
@@ -44,6 +45,7 @@ import { CacheModule } from './cache/cache.module';
   controllers: [],
   providers: [
     JwtAuthGuard,
+    WsJwtAuthGuard,
     RolesGuard,
     JwtService,
     JwtStrategy,
@@ -55,8 +57,10 @@ import { CacheModule } from './cache/cache.module';
     PassportModule,
     JwtModule,
     JwtAuthGuard,
+    WsJwtAuthGuard,
     RolesGuard,
     JwtStrategy,
+    SessionService,
   ],
 })
 export class CoreModule implements NestModule {
