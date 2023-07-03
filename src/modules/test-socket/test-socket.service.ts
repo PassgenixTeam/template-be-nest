@@ -15,7 +15,10 @@ export class TestSocketService implements IGatewayBase {
 
   create(client: Socket, createTestSocketDto: CreateTestSocketDto) {
     console.log(createTestSocketDto);
-    throw new CustomWsExceptionFilter('Lỗi tè le');
+    throw new CustomWsExceptionFilter({
+      eventMessage: 'test event message',
+      message: 'test message',
+    });
     client.emit('message', 'hello');
   }
 

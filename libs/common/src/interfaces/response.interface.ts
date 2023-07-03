@@ -7,6 +7,7 @@ export interface IResponse<T> {
   error?: string;
   errorCode?: number | string;
   currentTime?: number;
+  eventMessage?: string; // for socket
 }
 
 export interface IResPagination<T> {

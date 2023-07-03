@@ -1,4 +1,7 @@
+import { WsAllExceptionsFilter } from '@app/common/filter';
+import { WsJwtAuthGuard } from '@app/core/guards/jwt-auth/ws-jwt-auth.guard';
 import { Logger } from '@nestjs/common';
+import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -21,8 +24,17 @@ export class BaseGateway
     this.service.initServer(server);
   }
 
-  handleConnection(client: any) {
-    this.logger.verbose(`Connection: ${client.id}`);
+  async handleConnection(client: any) {
+    try {
+      const authGuard = new WsJwtAuthGuard();
+      const executionContext = new ExecutionContextHost([client]);
+      await authGuard.canActivate(executionContext);
+      this.logger.verbose(`Connection: ${client.id}`);
+    } catch (error) {
+      const httpExceptionFilter = new WsAllExceptionsFilter();
+      const host = new ExecutionContextHost([client]);
+      httpExceptionFilter.catch(error as any, host);
+    }
   }
 
   handleDisconnect(client: any) {
