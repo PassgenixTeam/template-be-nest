@@ -5,7 +5,7 @@ import { ROLE } from '@app/common';
 import { IS_PUBLIC_KEY } from '@app/core/decorators';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class WsRolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -19,7 +19,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const roles = this.reflector.get<ROLE[]>('roles', context.getHandler());
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToWs().getClient();
     if (isEmpty(roles)) {
       return true;
     }
