@@ -9,6 +9,7 @@ import { CustomWsExceptionFilter } from '@app/common/exception/custom-ws.excepti
 import { WsAuth } from '@app/core';
 import { Logger, UseFilters, UseInterceptors } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
@@ -39,7 +40,7 @@ export class TestSocketGateway extends BaseGateway {
   @WsAuth()
   @SubscribeMessage('createTestSocket')
   create(
-    client: Socket,
+    @ConnectedSocket() client: Socket,
     @MessageBody() createTestSocketDto: CreateTestSocketDto,
   ) {
     throw new CustomWsExceptionFilter('test message');
