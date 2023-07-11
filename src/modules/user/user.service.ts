@@ -1,23 +1,15 @@
-// @ts-nocheck
-// @ts-ignore
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './entities/user.entity';
-import { UserRepository } from 'src/modules/user/user.repository';
-import { User } from 'src/modules/user/schema/user.schema';
-import { ERROR_MESSAGES } from 'src/shared/constants/errors';
+import { customPlaintToInstance } from '@app/common';
 import { CustomBadRequestException } from '@app/common/exception/custom-bad-request.exception';
+import { Injectable } from '@nestjs/common';
+import { ProfileResponseDto } from 'src/modules/user/dto/get-user.dto';
+import { ERROR_MESSAGES } from 'src/shared/constants/errors';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from 'src/modules/user/schema/user.schema';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
-
-  async profile(user: User) {
-    delete user.loginSession;
-    delete user.cacheId;
-    return user;
+  profile(user: User): ProfileResponseDto {
+    return customPlaintToInstance(ProfileResponseDto, user);
   }
 
   findAll() {

@@ -1,3 +1,8 @@
+import {
+  ClassConstructor,
+  ClassTransformOptions,
+  plainToInstance,
+} from 'class-transformer';
 import { existsSync, unlinkSync } from 'fs';
 import * as _ from 'lodash';
 import slugify from 'slugify';
@@ -95,5 +100,20 @@ export const stringToSlug = (str: string) => {
     strict: false, // strip special characters except replacement, defaults to `false`
     locale: 'vi', // language code of the locale to use
     trim: true, // trim leading and trailing replacement chars, defaults to `true`
+  });
+};
+
+export const customPlaintToInstance = <T>(
+  classType: ClassConstructor<T>,
+  plain: any,
+  options?: ClassTransformOptions | null,
+) => {
+  const optionsDefault = {
+    excludeExtraneousValues: true,
+    exposeUnsetFields: false,
+  };
+  return plainToInstance<T, any>(classType, plain, {
+    ...optionsDefault,
+    ...options,
   });
 };

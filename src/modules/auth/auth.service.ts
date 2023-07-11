@@ -1,16 +1,21 @@
+import { CustomBadRequestException } from '@app/common/exception/custom-bad-request.exception';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
-import { TokenPayload, sha512 } from '../../../libs/common/src';
-import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
+import { ProfileResponseDto } from 'src/modules/user/dto/get-user.dto';
+import { User } from 'src/modules/user/schema/user.schema';
+import { UserRepository } from 'src/modules/user/user.repository';
+import { ERROR_MESSAGES } from 'src/shared/constants/errors';
+import { v4 as uuidV4 } from 'uuid';
+import {
+  TokenPayload,
+  customPlaintToInstance,
+  sha512,
+} from '../../../libs/common/src';
 import { RedisService, appConfig } from '../../../libs/core/src';
 import { SessionService } from '../session/session.service';
-import { v4 as uuidV4 } from 'uuid';
-import { UserRepository } from 'src/modules/user/user.repository';
-import { User } from 'src/modules/user/schema/user.schema';
-import { plainToInstance } from 'class-transformer';
-import { ERROR_MESSAGES } from 'src/shared/constants/errors';
-import { CustomBadRequestException } from '@app/common/exception/custom-bad-request.exception';
+import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +26,7 @@ export class AuthService {
     private redisService: RedisService,
   ) {}
 
-  async login(input: LoginDto) {
+  async login(input: LoginRequestDto): Promise<LoginResponseDto> {
     const { email, password } = input;
 
     const user = await this.userRepository.findOne({
@@ -49,14 +54,14 @@ export class AuthService {
       user: user,
     });
 
-    return {
-      user,
+    return customPlaintToInstance(LoginResponseDto, {
+      user: customPlaintToInstance(ProfileResponseDto, user),
       token: {
         accessToken,
         refreshToken,
         expiredIn: appConfig.jwt.JWT_EXPIRES_IN,
       },
-    };
+    });
   }
 
   async register(input: RegisterDto) {

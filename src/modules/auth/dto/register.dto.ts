@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
-import { IRegisterRequestDto } from 'src/shared/dto/auth/register.request.dto';
+import { IRegisterRequestDto } from 'src/shared/dto/auth/register.dto';
 
 export class RegisterDto implements IRegisterRequestDto {
   @ApiProperty({ type: String, example: 'abc@gmail.com' })
