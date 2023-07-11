@@ -1,9 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
+import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
-import { TokenPayload, sha512 } from '../../../libs/common/src';
+import {
+  TokenPayload,
+  customPlaintToInstance,
+  sha512,
+} from '../../../libs/common/src';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService, appConfig } from '../../../libs/core/src';
@@ -11,6 +15,8 @@ import { SessionService } from '../session/session.service';
 import { v4 as uuidV4 } from 'uuid';
 import { ERROR_MESSAGES } from 'src/shared/constants/errors';
 import { CustomBadRequestException } from '@app/common/exception/custom-bad-request.exception';
+import { plainToInstance } from 'class-transformer';
+import { ProfileResponseDto } from 'src/modules/user/dto/get-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +28,7 @@ export class AuthService {
     private redisService: RedisService,
   ) {}
 
-  async login(input: LoginDto) {
+  async login(input: LoginRequestDto): Promise<LoginResponseDto> {
     const { email, password } = input;
 
     const user = await this.usersRepository.findOne({
@@ -49,15 +55,21 @@ export class AuthService {
       refreshToken,
       user: user,
     });
+    console.log(
+      plainToInstance(ProfileResponseDto, user, {
+        excludeExtraneousValues: true,
+        exposeUnsetFields: false,
+      }),
+    );
 
-    return {
-      user,
+    return customPlaintToInstance(LoginResponseDto, {
+      user: customPlaintToInstance(ProfileResponseDto, user),
       token: {
         accessToken,
         refreshToken,
         expiredIn: appConfig.jwt.JWT_EXPIRES_IN,
       },
-    };
+    });
   }
 
   async register(input: RegisterDto) {

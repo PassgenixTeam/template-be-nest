@@ -6,7 +6,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import { SessionService } from 'src/modules/session/session.service';
 import { EVENT_SOCKET } from 'src/shared/socket/event';
 export class BaseGateway
@@ -27,7 +27,7 @@ export class BaseGateway
     this.jwtService = new JwtService();
   }
 
-  afterInit(server: any) {
+  afterInit(server: Server) {
     this.logger.verbose(`WebSocket listening!`);
     this.service.initServer(server);
   }
