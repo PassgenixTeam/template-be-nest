@@ -9,6 +9,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import mongoose from 'mongoose';
 import { AppModule } from './app.module';
+import { RequestMethod } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -18,7 +19,9 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   app.enableCors();
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [{ path: 'file/:filename', method: RequestMethod.GET }],
+  });
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(
     new AllExceptionsFilter(),

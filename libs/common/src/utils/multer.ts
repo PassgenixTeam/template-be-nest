@@ -7,7 +7,7 @@ const storageDisk = diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, destination: string) => void,
   ) {
-    if (file.fieldname === 'files') return cb(null, './public/thumbs');
+    if (file.fieldname === 'files') return cb(null, './public/uploads');
     return cb(null, './public/results');
   },
   filename: function (

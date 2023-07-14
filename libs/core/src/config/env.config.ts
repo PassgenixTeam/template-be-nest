@@ -10,6 +10,9 @@ const appConfig = {
   server: {
     PORT: process.env.PORT || 3000,
     HOST: process.env.HOST || 'localhost',
+    URL: `http://${process.env.HOST || 'localhost'}:${
+      process.env.PORT || 3000
+    }`,
   },
   swagger: {
     SWAGGER_TITLE: process.env.SWAGGER_TITLE || 'NestJS API',
