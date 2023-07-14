@@ -5,6 +5,7 @@ import { PaypalModule } from '../../libs/payment/src/modules/paypal/paypal.modul
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { TestSocketModule } from './test-socket/test-socket.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TestSocketModule } from './test-socket/test-socket.module';
     PaypalModule,
     UploadModule,
     TestSocketModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],
