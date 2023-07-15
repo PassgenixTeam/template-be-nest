@@ -42,7 +42,7 @@ import { BackupDbModule } from './modules/backup-db/backup-db.module';
       }),
     }),
     CacheModule.register(),
-    BackupDbModule,
+    BackupDbModule.start({ isStart: false }),
   ],
   controllers: [],
   providers: [

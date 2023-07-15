@@ -7,8 +7,10 @@ import { resolve } from 'path';
 
 @Injectable()
 export class BackupDbService {
-  constructor(private readonly driveService: DriveService) {
-    this.backupDb();
+  private readonly driveService: DriveService;
+  constructor(isStart: boolean, driveService: DriveService) {
+    this.driveService = driveService;
+    if (isStart) this.backupDb();
   }
 
   private readonly logger = new Logger(BackupDbService.name);
