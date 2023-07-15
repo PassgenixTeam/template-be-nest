@@ -64,6 +64,14 @@ const appConfig = {
     AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME || '',
     AWS_BUCKET_REGION: process.env.AWS_BUCKET_REGION || '',
   },
+  DRIVE: {
+    PARENT_FOLDER_NAME:
+      process.env.GOOGLE_API_DRIVE_PARENT_FOLDER_NAME || 'backup-db',
+    GOOGLE_API_CLIENT_ID: process.env.GOOGLE_API_CLIENT_ID || '',
+    GOOGLE_API_CLIENT_SECRET: process.env.GOOGLE_API_CLIENT_SECRET || '',
+    GOOGLE_API_REFRESH_TOKEN: process.env.GOOGLE_API_REFRESH_TOKEN || '',
+    GOOGLE_API_REDIRECT_URI: process.env.GOOGLE_API_REDIRECT_URI || '',
+  },
 };
 
 export { appConfig };

@@ -20,6 +20,7 @@ import { SessionService } from '../../../src/modules/session/session.service';
 import { CacheModule } from './cache/cache.module';
 import { JwtAuthGuard } from '@app/core/guards';
 import { WsJwtAuthGuard } from '@app/core/guards/jwt-auth/ws-jwt-auth.guard';
+import { BackupDbModule } from './modules/backup-db/backup-db.module';
 
 @Global()
 @Module({
@@ -41,6 +42,7 @@ import { WsJwtAuthGuard } from '@app/core/guards/jwt-auth/ws-jwt-auth.guard';
       }),
     }),
     CacheModule.register(),
+    BackupDbModule,
   ],
   controllers: [],
   providers: [
@@ -51,7 +53,6 @@ import { WsJwtAuthGuard } from '@app/core/guards/jwt-auth/ws-jwt-auth.guard';
     JwtStrategy,
     SessionService,
   ],
-
   exports: [
     CacheModule,
     PassportModule,
