@@ -7,16 +7,17 @@ import { randomNumber } from '@app/common';
 interface File {
   Key: string;
 }
-const s3 = new AWS.S3({
-  credentials: {
-    accessKeyId: appConfig.s3.AWS_ACCESS_KEY,
-    secretAccessKey: appConfig.s3.AWS_SECRET_KEY,
-  },
-  region: appConfig.s3.AWS_BUCKET_REGION,
-});
 
 @Injectable()
 export class S3UploadService {
+  private s3 = new AWS.S3({
+    credentials: {
+      accessKeyId: appConfig.s3.AWS_ACCESS_KEY,
+      secretAccessKey: appConfig.s3.AWS_SECRET_KEY,
+    },
+    region: appConfig.s3.AWS_BUCKET_REGION,
+  });
+
   async s3Upload(file: Partial<Express.Multer.File>) {
     try {
       const params: AWS.S3.PutObjectRequest = {
@@ -26,7 +27,7 @@ export class S3UploadService {
         ContentType: file.mimetype,
       };
 
-      const data = await s3.upload(params).promise();
+      const data = await this.s3.upload(params).promise();
       console.log(data);
       return data;
     } catch (error) {
@@ -47,7 +48,7 @@ export class S3UploadService {
 
     try {
       const data = await Promise.all(
-        params.map((param) => s3.upload(param).promise()),
+        params.map((param) => this.s3.upload(param).promise()),
       );
       console.log(data);
       return data;
@@ -64,7 +65,7 @@ export class S3UploadService {
     };
 
     return new Promise((resolve, reject) => {
-      s3.deleteObject(params, (err, data) => {
+      this.s3.deleteObject(params, (err, data) => {
         if (err) {
           console.log(err.message);
           return reject(false);
@@ -90,7 +91,7 @@ export class S3UploadService {
     };
 
     return new Promise((resolve, reject) => {
-      s3.deleteObjects(params, (err, data) => {
+      this.s3.deleteObjects(params, (err, data) => {
         if (err) {
           return reject(err);
         }

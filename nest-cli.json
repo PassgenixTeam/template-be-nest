@@ -35,13 +35,13 @@
         "tsConfigPath": "libs/payment/tsconfig.lib.json"
       }
     },
-    "upload-file": {
+    "upload": {
       "type": "library",
-      "root": "libs/upload-file",
+      "root": "libs/upload",
       "entryFile": "index",
-      "sourceRoot": "libs/upload-file/src",
+      "sourceRoot": "libs/upload/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/upload-file/tsconfig.lib.json"
+        "tsConfigPath": "libs/upload/tsconfig.lib.json"
       }
     }
   }
