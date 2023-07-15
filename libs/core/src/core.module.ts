@@ -41,7 +41,7 @@ import { BackupDbModule } from '@app/core/modules/backup-db/backup-db.module';
     }),
     CacheModule.register(),
     SessionModule,
-    BackupDbModule,
+    BackupDbModule.start({ isStart: false }),
   ],
   controllers: [],
   providers: [
