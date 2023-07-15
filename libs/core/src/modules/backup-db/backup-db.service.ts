@@ -15,19 +15,15 @@ export class BackupDbService {
 
   async backupDb() {
     try {
-      // const filename = await this.executeBackup();
+      const filename = await this.executeBackup();
 
       const mimeType = 'application/sql';
       const buffer = createReadStream(
-        resolve(process.cwd(), 'backups', 'backup-1689408706687.sql'),
-      );
-
-      console.log(
-        resolve(process.cwd(), 'backups', 'backup-1689408706687.sql'),
+        resolve(process.cwd(), 'backups', filename),
       );
 
       const { data } = await this.driveService.uploadFile(
-        'backup-1689408706687.sql',
+        filename,
         mimeType,
         buffer,
       );
@@ -44,14 +40,16 @@ export class BackupDbService {
     const command = `docker exec postgres pg_dump -U ${appConfig.database.MY_SQL.DB_USERNAME} -h ${appConfig.database.MY_SQL.DB_HOST} -p ${appConfig.database.MY_SQL.DB_PORT} -d ${appConfig.database.MY_SQL.DB_DATABASE_NAME} -f ${filename}`;
 
     return new Promise((resolve, reject) => {
-      exec(command, (err, _stdout, stderr) => {
+      exec(command, (err, stdout, stderr) => {
         if (err) {
           this.logger.error('Error: ', err);
           return reject(err);
         }
         if (stderr) {
           this.logger.verbose('stderr: ', stderr);
-          return reject(stderr);
+        }
+        if (stdout) {
+          this.logger.verbose('stdout: ', stdout);
         }
         this.logger.verbose('Backup completed!');
         return resolve(filename);
