@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  node:
+    image: node:18-alpine
+    command: sleep infinity
+  
+  backend:
+    image: node:18-alpine
+    depends_on:
+      - node
+    command: sh -c "yarn install && yarn build && yarn start:prod"
+    ports:
+      - 4001:4001
+    working_dir: /Test-Quiz-BE
+    volumes:
+      - ./Test-Quiz-BE:/Test-Quiz-BE
+    environment:
+      - PORT=4001
+    
